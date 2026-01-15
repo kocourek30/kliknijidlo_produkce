@@ -306,4 +306,5 @@ Otevři Pull Request
 📞 Podpora
 Pokud narazíte na problém, otevřete Issue na GitHubu.
 
-⭐ Pokud se vám projekt líbí, dejte mu hvězdičku! ⭐
+⭐ Pokud se vám projekt líbí, dejte mu hvězdičku! ⭐#   k l i k n i j i d l o _ p r o d u k c e  
+ 
