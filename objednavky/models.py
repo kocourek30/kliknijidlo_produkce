@@ -1,0 +1,182 @@
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from django.db.models import Sum
+from datetime import timedelta
+from jidelnicek.models import PolozkaJidelnicku
+from django.contrib.auth.models import Group
+from canteen_settings.models import OrderClosingTime, GroupOrderLimit  # ✅ Správný import
+from dotace.models import SkupinoveNastaveni, DotacniPolitika, DotaceProJidelniskouSkupinu
+from decimal import Decimal
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('zalozena-obsluhou', 'Založená obsluhou'),
+        ('objednano', 'Objednáno'),
+        ('zruseno-uzivatelem', 'Zrušeno uživatelem'),
+        ('zruseno-obsluhou', 'Zrušeno obsluhou'),
+        ('castecne-vydano', 'Částečně vydáno'),
+        ('vydano', 'Vydáno'),
+        ('nevyzvednuto', 'Nevyzvednuto'),
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
+    datum_vydeje = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)  # ← PŘIDAT
+    datum_vydani = models.DateTimeField(null=True, blank=True, verbose_name="Datum a čas vydání")  # ← PŘIDAT
+    status = models.CharField(
+        max_length=32,
+        choices=STATUS_CHOICES,
+        default='objednano'
+    )
+    storno_user = models.ForeignKey('users.CustomUser', null=True, blank=True, on_delete=models.SET_NULL, verbose_name="Storno provedl")
+    storno_datum = models.DateTimeField(null=True, blank=True, verbose_name="Storno datum")
+    class Meta:
+        unique_together = ('user', 'datum_vydeje')
+        verbose_name = "Objednávka"
+        verbose_name_plural = "Objednávky uživatelů"
+
+    def __str__(self):
+        return f"Objednávka {self.user} na {self.datum_vydeje}"
+
+    def total_quantity(self):
+        return sum(item.quantity for item in self.items.all())
+
+    def total_price(self):
+        return sum(item.quantity * item.cena for item in self.items.all())
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    menu_item = models.ForeignKey(PolozkaJidelnicku, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(default=1)
+    cena = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    vydano = models.BooleanField(default=False)  # NOVÉ POLE
+    datum_vydani = models.DateTimeField(null=True, blank=True) 
+
+    class Meta:
+        indexes = [models.Index(fields=['vydano', 'datum_vydani'])]
+
+    class Meta:
+        unique_together = ('order', 'menu_item')
+
+    def __str__(self):
+        return f"{self.menu_item.jidlo.nazev} x {self.quantity}"
+
+    def total_price(self):
+        return self.quantity * self.cena
+    
+    class Meta:
+        verbose_name = "Objednaná jídla"
+        verbose_name_plural = "Objednaná jídla"    
+
+class OrderValidator:
+    @staticmethod
+    def can_order_for_date(user, target_date):
+        """Kontrola uzavíracího času objednávek z canteen_settings"""
+        if user.is_staff:
+            return True, ""
+        
+        try:
+            settings = OrderClosingTime.objects.first()
+            if not settings:
+                return True, ""
+            
+            closing_date = target_date - timedelta(days=settings.advance_days)
+            closing_datetime = timezone.datetime.combine(closing_date, settings.closing_time)
+            closing_datetime = timezone.make_aware(closing_datetime, timezone.get_current_timezone())
+            
+            if timezone.now() >= closing_datetime:
+                return False, f"Objednávky na {target_date.strftime('%d.%m.%Y')} jsou uzavřeny."
+            return True, ""
+        except:
+            return True, ""
+
+    @staticmethod
+    def check_group_limit(user, menu_item, target_date, quantity):
+        """Kontrola limitu objednávek podle skupiny a druhu jídla"""
+        if user.is_staff:
+            return True, ""
+        
+        user_group = user.groups.first()
+        if not user_group:
+            return True, ""
+        
+        # ✅ Opraveno: GroupOrderLimit + správná pole
+        limit_setting = GroupOrderLimit.objects.filter(
+            group=user_group,
+            druh_jidla=menu_item.druh_jidla
+        ).first()
+        
+        if not limit_setting or limit_setting.max_orders_per_day is None or limit_setting.max_orders_per_day == 0:
+            return True, ""
+        
+        current_orders = OrderItem.objects.filter(
+            order__user=user,
+            order__datum_vydeje=target_date,
+            menu_item__druh_jidla=menu_item.druh_jidla
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+        
+        if current_orders + quantity > limit_setting.max_orders_per_day:
+            return False, f"Limit {limit_setting.max_orders_per_day} ks {menu_item.druh_jidla.nazev} za den!"
+        return True, ""
+
+    @staticmethod
+    def get_price_for_user(user, menu_item):
+        """Výpočet ceny s dotací podle skupiny"""
+        skupina = user.groups.first()
+        if not skupina:
+            return menu_item.jidlo.cena
+        
+        politika = getattr(skupina, 'dotacni_politika', None)
+        if not politika:
+            return menu_item.jidlo.cena
+        
+        prepis = DotaceProJidelniskouSkupinu.objects.filter(
+            dotacni_politika=politika,
+            jidelniskova_skupina=menu_item.druh_jidla
+        ).first()
+        
+        procento = prepis.procento if prepis and prepis.procento is not None else politika.procento
+        castka = prepis.castka if prepis and prepis.castka is not None else politika.castka
+        base_price = menu_item.jidlo.cena
+        snizena_cena = base_price
+        
+        if procento and procento != Decimal('0'):
+            snizena_cena = base_price * (Decimal('1') - Decimal(procento) / Decimal('100'))
+        if castka and castka != Decimal('0'):
+            snizena_cena = max(Decimal('0'), snizena_cena - Decimal(castka))
+        
+        return snizena_cena.quantize(Decimal('0.01'))
+
+    @staticmethod
+    def check_user_balance(user, total_price):
+        """Kontrola zůstatku a nastavení skupiny"""
+        nastaveni = SkupinoveNastaveni.objects.filter(
+            skupina__in=user.groups.all()
+        ).first()
+        
+        if not nastaveni:
+            return True, ""
+        
+        zustatek = getattr(user, 'aktualni_zustatek', Decimal('0'))
+        
+        if nastaveni.nutnost_dobit and zustatek < total_price:
+            return False, "insufficient_balance"
+        
+        if nastaveni.cerpani_debit and (zustatek - total_price) < nastaveni.debit_limit:
+            return False, "debit_limit_exceeded"
+        
+        if not nastaveni.cerpani_debit and zustatek < total_price:
+            return False, "insufficient_balance"
+        
+        return True, ""
+
+
+class UserRFID(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rfid')
+    rfid_tag = models.CharField(max_length=32, unique=True)
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.rfid_tag}"

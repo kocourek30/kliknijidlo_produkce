@@ -1,0 +1,650 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* ========== MAIN CONTAINER ========== */
+.main-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 40px);
+}
+
+/* ========== LEVÝ PANEL ========== */
+.left-panel {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Taby */
+.custom-tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 3px solid #e9ecef;
+    flex-shrink: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 4px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.tab-button:hover {
+    background: white;
+    color: #FF9800;
+}
+
+.tab-button.active {
+    background: white;
+    color: #FF9800;
+    border-bottom-color: #FF9800;
+}
+
+.tab-button i {
+    font-size: 1.2rem;
+}
+
+.tab-badge {
+    background: #FF9800;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+}
+
+.tab-button.active .tab-badge {
+    background: #4CAF50;
+}
+
+/* Tab content */
+.tab-content-wrapper {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== RFID SCANNER ========== */
+.rfid-scanner {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.rfid-icon {
+    font-size: 6rem;
+    color: #FF9800;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.rfid-scanner h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+}
+
+.rfid-scanner p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.rfid-status {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* ========== CUSTOMER LIST ========== */
+.customer-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.customer-card {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.customer-card:hover {
+    border-color: #FF9800;
+    background: white;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+    transform: translateX(4px);
+}
+
+.customer-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.customer-name i {
+    color: #FF9800;
+}
+
+.customer-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.item-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.item-badge.polevka {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.item-badge.hlavni {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.item-badge.dezert {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.item-badge.vecere {
+    background: #d4edda;
+    color: #155724;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: #999;
+}
+
+/* ========== SUMMARY FOOTER - ZELENÝ (OPRAVENÝ - HORIZONTÁLNÍ) ========== */
+.summary-footer {
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    padding: 1rem 1.5rem;
+    border-top: 3px solid #1B5E20;
+    flex-shrink: 0;
+}
+
+.summary-footer h4 {
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* OPRAVENÝ: Horizontální grid - VEDLE SEBE, procentuální šířka */
+.summary-grid {
+    display: grid;
+    grid-auto-flow: column; /* KLÍČOVÉ: položky vedle sebe! */
+    grid-auto-columns: 1fr; /* Každý box stejně široký */
+    gap: 0.75rem;
+    width: 100%;
+    height: 80px; /* Fixní výška */
+    padding: 0.5rem 0;
+    align-items: stretch;
+    overflow-x: auto; /* Scroll při moc položkách */
+}
+
+/* OMEZENÍ počtu viditelných boxů podle počtu položek */
+.summary-grid[data-item-count="1"] { grid-template-columns: 1fr; }
+.summary-grid[data-item-count="2"] { grid-template-columns: repeat(2, 1fr); }
+.summary-grid[data-item-count="3"] { grid-template-columns: repeat(3, 1fr); }
+.summary-grid[data-item-count="4"] { grid-template-columns: repeat(4, 1fr); } /* 25% */
+.summary-grid[data-item-count="5"] { grid-template-columns: repeat(5, 1fr); } /* 20% */
+.summary-grid[data-item-count="6"] { grid-template-columns: repeat(6, 1fr); }
+.summary-grid[data-item-count="7"],
+.summary-grid[data-item-count="8"] { grid-template-columns: repeat(4, 1fr); }
+.summary-grid[data-item-count="9"],
+.summary-grid[data-item-count="10"] { grid-template-columns: repeat(5, 1fr); }
+.summary-grid[data-item-count="11"],
+.summary-grid[data-item-count="12"] { grid-template-columns: repeat(6, 1fr); }
+
+/* FALLBACK pro více */
+.summary-grid[data-item-count] {
+    grid-auto-columns: minmax(120px, 1fr);
+}
+
+.summary-item {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+    height: 100%;
+    min-width: 0; /* Pro správné zmenšování */
+}
+
+.summary-item:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.summary-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 0.5rem;
+    overflow: hidden;
+}
+
+.summary-item-name {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.summary-item-type {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.summary-item-quantity {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Scrollbar pro summary grid */
+.summary-grid::-webkit-scrollbar {
+    height: 4px;
+}
+
+.summary-grid::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+}
+
+.summary-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.5);
+    border-radius: 2px;
+}
+
+/* ========== PRAVÝ PANEL ========== */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.info-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.info-date {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #4CAF50;
+}
+
+.info-time {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #FF9800;
+    font-variant-numeric: tabular-nums;
+}
+
+.info-user {
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-user i {
+    color: #4CAF50;
+}
+
+.recent-orders {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-orders h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.recent-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.recent-order-item {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #f1f3f5;
+    transition: all 0.2s;
+}
+
+.recent-order-item:hover {
+    background: #f8f9fa;
+}
+
+.recent-order-item:last-child {
+    border-bottom: none;
+}
+
+.recent-order-user {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.recent-order-user i {
+    color: #4CAF50;
+    font-size: 0.8rem;
+}
+
+.recent-order-time {
+    font-size: 0.75rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+}
+
+.recent-order-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.recent-order-badge {
+    background: #e8f5e9;
+    color: #2E7D32;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Scrollbar styling */
+.recent-list::-webkit-scrollbar,
+.tab-content-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recent-list::-webkit-scrollbar-track,
+.tab-content-wrapper::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 3px;
+}
+
+.recent-list::-webkit-scrollbar-thumb,
+.tab-content-wrapper::-webkit-scrollbar-thumb {
+    background: #4CAF50;
+    border-radius: 3px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1400px) {
+    .main-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .right-panel {
+        flex-direction: row;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0.5rem;
+    }
+    
+    .tab-button {
+        font-size: 0.9rem;
+        padding: 0.875rem 1rem;
+    }
+    
+    .main-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .right-panel {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+        height: 120px;
+    }
+
+    .info-content {
+        text-align: center;
+    }
+
+    .summary-item {
+        padding: 1rem;
+    }
+}
+
+
+/* Styl pro seznam položek objednávky */
+.order-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-quantity {
+    font-weight: 700;
+    color: #2196F3;
+    min-width: 35px;
+    display: inline-block;
+}
+
+.item-name {
+    flex: 1;
+    color: #333;
+    font-weight: 500;
+}
+
+.item-type {
+    color: #666;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Pro vydané objednávky */
+.order-items-list.completed .order-item {
+    border-bottom-color: #e8f5e9;
+}
+
+.order-items-list.completed .item-quantity {
+    color: #4CAF50;
+}
+
+.order-items-list.completed .item-name {
+    color: #2e7d32;
+}
+
+.order-items-list.completed .item-type {
+    color: #66bb6a;
+}
+
+/* Recent orders list */
+.recent-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.recent-order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 1.5rem;
+    font-size: 0.85rem;
+}
+
+.recent-order-list li {
+    padding: 0.2rem 0;
+    color: #555;
+}
+
+.recent-order-list .item-qty {
+    font-weight: 600;
+    color: #4CAF50;
+    margin-right: 0.3rem;
+}
+
+/* Customer card adjustments */
+.customer-items-list {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+}

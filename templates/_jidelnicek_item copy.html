@@ -1,0 +1,75 @@
+{# _jidelnicek_item.html #}
+<div class="p-3 my-2 bg-white rounded gradient-border">
+  <div class="row gx-4 gy-2 align-items-center w-100">
+    <div class="col-12 col-md-9 d-flex flex-column justify-content-center">
+      <div class="d-flex align-items-center mb-1">
+        <span class="me-2 fs-5 text-muted d-flex align-items-center">
+          <i class="{{ item.druh_jidla.ikona }} me-2"></i>
+          <span>{{ item.druh_jidla.nazev }}</span>
+        </span>
+      </div>
+      <div class="fs-4 fw-bold mb-1">{{ item.jidlo.nazev }}</div>
+      <div class="text-success fs-5 fw-bolder mb-2 d-flex align-items-center">
+        <i class="fa fa-tag me-2"></i>
+        <span>{{ item.upravena_cena }} Kč</span>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12 col-md-6 border-end mb-2 mb-md-0">
+          <small class="text-muted">
+            <strong>Alergeny:</strong>
+            {% if item.jidlo.alergeny.count %}
+              {% for alergen in item.jidlo.alergeny.all %}
+                <i class="{{ alergen.ikona }} me-1" title="{{ alergen.nazev }}"></i>{{ alergen.nazev }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% else %}
+              Neobsahuje alergeny.
+            {% endif %}
+          </small>
+        </div>
+        <div class="col-12 col-md-6">
+          {% if item.jidlo.kcal or item.jidlo.bílkoviny or item.jidlo.tuky or item.jidlo.sacharidy %}
+            <small class="text-muted fst-italic">
+              <strong><i class="fa fa-apple-alt me-1"></i> Nutriční hodnoty:</strong>
+              Kalorie: {% if item.jidlo.kcal %}{{ item.jidlo.kcal }} kcal{% else %}-{% endif %} |
+              Bílkoviny: {% if item.jidlo.bílkoviny %}{{ item.jidlo.bílkoviny }} g{% else %}-{% endif %} |
+              Tuky: {% if item.jidlo.tuky %}{{ item.jidlo.tuky }} g{% else %}-{% endif %} |
+              Sacharidy: {% if item.jidlo.sacharidy %}{{ item.jidlo.sacharidy }} g{% else %}-{% endif %}
+            </small>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 d-flex flex-column justify-content-center pt-3 pt-md-0">
+      <form action="{% url 'order_create' %}" method="post" class="h-100 w-100 d-flex flex-column align-items-stretch">
+        {% csrf_token %}
+        <input type="hidden" name="menu_item_id" value="{{ item.id }}">
+        {% if date %}
+          <input type="hidden" name="menu_date" value="{{ date|date:'Y-m-d' }}">
+        {% endif %}
+        <div class="d-flex flex-row align-items-center w-100 mb-2 mt-md-4">
+          <div class="flex-shrink-0">
+            <div class="input-group input-group-sm">
+              <button type="button" class="btn btn-outline-secondary"
+                onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'));"
+                aria-label="Snížit počet">
+                <i class="fa fa-minus"></i>
+              </button>
+              <input type="number" name="quantity" min="1" value="1"
+                     class="form-control text-center"
+                     style="max-width: 48px;" aria-label="Počet jídel"
+                     inputmode="numeric">
+              <button type="button" class="btn btn-outline-secondary"
+                onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'));"
+                aria-label="Zvýšit počet">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-lg ms-3 w-100 d-flex align-items-center justify-content-center" style="font-size:1.12em; min-height:45px;">
+            <i class="fa fa-cart-plus me-2"></i> Objednat
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

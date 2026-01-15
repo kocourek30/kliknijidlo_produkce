@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<style>
+    body {
+        background: url("{% static 'images/background-login.png' %}") center center no-repeat;
+        background-size: cover;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        box-sizing: border-box;
+    }
+    .login-center-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding-bottom: 64px;
+    }
+    .login-form-card {
+        background: rgba(255,255,255,0.07);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        border-radius: 12px;
+        padding: 2.5rem 2rem 2rem 2rem;
+        
+        
+        width: 100%;
+    }
+    .login-form-logo {
+        max-width: 35%;
+        margin-bottom: 24px;
+        margin-top: -20px;
+    }
+    footer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        background: rgba(255,255,255,0.5);
+        border-top: 2px solid white;
+        text-align: center;
+        padding: 10px 0;
+        z-index: 99;
+        font-size: 0.95em;
+        letter-spacing: 0.7px;
+    }
+</style>
+
+<div class="login-center-box">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="login-form-card">
+                    <div class="row mb-2">
+                        <div class="col-12 text-center">
+                            <img src="{% static 'images/logo.png' %}" alt="Klikni jídlo logo" class="login-form-logo" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 px-2">
+                            <h2 class="mb-3" style="font-size: 1.2em;">
+                                <i class="fa-solid fa-id-card fa-lg me-2 text-success"></i>
+                                Načtěte RFID kartu
+                            </h2>
+                            <p id="message" class="lead">Čekám na načtení karty...</p>
+                            <div id="status" class="text-success mb-3"></div>
+                            <div id="error" class="text-danger mb-3"></div>
+                        </div>
+                        <div class="col-6 px-2">
+                            <h2 style="font-size: 1.2em;">
+                                <i class="fa-solid fa-user fa-lg me-2 text-primary"></i>
+                                Ruční přihlášení
+                            </h2>
+                            <form id="manual-login-form" method="post" action="{% url 'login' %}">
+                                {% csrf_token %}
+                                <div class="mb-3 text-start">
+                                    <label for="username" class="form-label">
+                                        <i class="fa-solid fa-user"></i> Uživatelské jméno
+                                    </label>
+                                    <input type="text" class="form-control" id="username" name="username" required />
+                                </div>
+                                <div class="mb-3 text-start">
+                                    <label for="password" class="form-label">
+                                        <i class="fa-solid fa-key"></i> Heslo
+                                    </label>
+                                    <input type="password" class="form-control" id="password" name="password" required />
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Přihlásit se
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    &copy; Klikni jídlo 2025
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const statusEl = document.getElementById('status');
+    const messageEl = document.getElementById('message');
+    const errorEl = document.getElementById('error');
+
+    const ws = new WebSocket('ws://localhost:8080');
+    ws.onopen = () => {
+        messageEl.textContent = 'Připojeno k RFID serveru, čekám na kartu...';
+        errorEl.textContent = '';
+        statusEl.textContent = '';
+    };
+    ws.onerror = (event) => {
+        console.error('WebSocket error:', event);
+        errorEl.textContent = 'Chyba WebSocket: ' + (event.message || JSON.stringify(event));
+    };
+    ws.onclose = (event) => {
+        console.warn('WebSocket uzavřen:', event);
+        errorEl.textContent = `WebSocket uzavřen, kód: ${event.code}, důvod: ${event.reason}`;
+    };
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'rfid' && message.rfid) {
+            const rfid = message.rfid;
+            statusEl.textContent = 'Načtená RFID: ' + rfid;
+            axios.post('{% url "rfid-login-api" %}', { rfid })
+                .then(resp => {
+                    if (resp.data.success) {
+                        statusEl.textContent = 'Uživatel ' + resp.data.username + ' přihlášen.';
+                        messageEl.textContent = 'Přesměrovávám na dashboard...';
+                        setTimeout(() => {
+                            window.location.href = "{% url 'dashboard' %}";
+                        }, 1000);
+                    } else {
+                        errorEl.textContent = 'Přihlášení selhalo: ' + (resp.data.error || 'Neznámá chyba');
+                    }
+                })
+                .catch(err => {
+                    errorEl.textContent = 'Chyba API: ' + err.message;
+                });
+        }
+    };
+</script>
+{% endblock %}

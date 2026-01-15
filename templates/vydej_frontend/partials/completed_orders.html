@@ -1,0 +1,68 @@
+{% if completed_orders %}
+    {% for prepared in completed_orders %}
+    <div class="customer-card">
+        <div class="customer-name d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                {{ prepared.order.user.get_full_name }}
+                {% if prepared.order.status == 'castecne-vydano' %}
+                    <span class="badge bg-warning text-dark ms-2" style="font-size: 0.7rem;">
+                        <i class="fas fa-clock"></i> Částečně
+                    </span>
+                {% endif %}
+            </div>
+            <strong style="color: #4CAF50; font-size: 1rem;">
+                {{ prepared.order.datum_vydani|date:"H:i:s" }}
+            </strong>
+        </div>
+        
+        <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem; padding-left: 0.25rem;">
+            <i class="far fa-calendar-alt"></i>
+            Objednáno na: <strong style="color: #4CAF50;">{{ prepared.order.datum_vydeje|date:"d.m.Y" }}</strong>
+            <span style="margin-left: 0.5rem;">
+                <i class="far fa-clock"></i>
+                Vydáno: <strong style="color: #4CAF50;">{{ prepared.order.datum_vydani|date:"d.m.Y H:i:s" }}</strong>
+            </span>
+        </div>
+        
+        <div class="customer-items-list">
+            <ul class="order-items-list completed">
+                {% for item in prepared.issued_items %}
+                <li class="order-item">
+                    <span class="item-quantity">{{ item.quantity }}×</span>
+                    <span class="item-name">{{ item.menu_item.jidlo.nazev }}</span>
+                    <span class="item-type">({{ item.menu_item.druh_jidla.nazev }})</span>
+                    {% if item.datum_vydani %}
+                    <span class="item-issued-time" style="font-size: 0.75rem; color: #888; margin-left: 0.5rem;">
+                        {{ item.datum_vydani|date:"H:i" }}
+                    </span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        {% if prepared.pending_items %}
+        <div style="margin-top: 0.75rem; padding: 0.5rem; background: #fff3cd; border-radius: 6px; border-left: 3px solid #ffc107;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: #856404; margin-bottom: 0.3rem;">
+                <i class="fas fa-clock"></i> Čeká na výdej:
+            </div>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #856404;">
+                {% for item in prepared.pending_items %}
+                <li style="padding: 0.2rem 0;">
+                    <span style="font-weight: 600;">{{ item.quantity }}×</span>
+                    {{ item.menu_item.jidlo.nazev }}
+                    <span style="font-style: italic;">({{ item.menu_item.druh_jidla.nazev }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-info-circle"></i>
+        <p>Zatím nebylo nic vydáno</p>
+    </div>
+{% endif %}

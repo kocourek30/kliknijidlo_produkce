@@ -1,0 +1,21 @@
+<h4>
+    <i class="fas fa-clipboard-list"></i>
+    K výdeji nyní
+</h4>
+{% if pending_items %}
+<div class="summary-grid">
+    {% for item in pending_items %}
+    <div class="summary-item">
+        <div class="summary-item-info">
+            <div class="summary-item-name">{{ item.menu_item__jidlo__nazev }}</div>
+            <div class="summary-item-type">{{ item.menu_item__druh_jidla__nazev }}</div>
+        </div>
+        <div class="summary-item-quantity">{{ item.total_quantity }}×</div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p style="color: rgba(255, 255, 255, 0.9); text-align: center; margin: 0; font-size: 0.95rem;">
+    <i class="fas fa-check-circle"></i> Žádné položky k výdeji
+</p>
+{% endif %}

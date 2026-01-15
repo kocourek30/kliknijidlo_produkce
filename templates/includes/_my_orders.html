@@ -1,0 +1,202 @@
+{% comment %}
+  Očekává: my_order_items s atributy total_price, can_cancel, is_closed
+{% endcomment %}
+
+{% if my_order_items %}
+<div class="modern-orders-container">
+  {% for oi in my_order_items %}
+  {% with item=oi.menu_item %}
+  <div class="order-item-card mb-3 shadow-sm border rounded-3 overflow-hidden {% if oi.is_closed %}order-closed{% endif %}">
+    <div class="order-item-row d-flex align-items-center justify-content-between p-3">
+
+      <!-- LEVÁ ČÁST: informace o objednávce -->
+      <div class="order-info flex-grow-1 me-3">
+        <!-- Datum a druh jídla -->
+        <div class="order-meta mb-2 d-flex align-items-center flex-wrap gap-2">
+
+          <span class="text-muted d-flex align-items-center small">
+            <i class="fa-regular fa-calendar-days me-2"></i>
+            {{ oi.order.datum_vydeje|date:"d.m.Y" }}
+          </span>
+                    <span class="badge bg-success text-white fw-semibold small rounded-pill">
+            {{ item.druh_jidla.nazev }}
+          </span>
+
+          
+        </div>
+
+        <!-- Název jídla -->
+        <div class="order-title fw-bold mb-2 fs-6 text-dark">
+          {{ item.jidlo.nazev }}
+        </div>
+
+        <!-- Množství a cena -->
+        <div class="order-details text-muted d-flex align-items-center gap-3">
+          <span class="d-flex align-items-center">
+            <i class="fa-solid fa-hashtag me-1"></i>
+            <strong class="text-dark">{{ oi.quantity }}</strong>&nbsp;ks
+          </span>
+          <span class="d-flex align-items-center">
+            <i class="fa-solid fa-tag me-1"></i>
+            {{ oi.cena|floatformat:2 }}&nbsp;Kč/ks
+          </span>
+        </div>
+      </div>
+
+      <!-- PRAVÁ ČÁST: CELKEM + AKCE -->
+      <div class="order-actions text-end d-flex flex-column align-items-end gap-2">
+        <!-- Celková cena -->
+        <div class="order-total fw-bold fs-4 text-primary mb-1">
+          {{ oi.total_price }}&nbsp;Kč
+        </div>
+
+        <!-- Jednotné tlačítko -->
+        {% if oi.can_cancel %}
+          <!-- TLAČÍTKO ZRUŠIT (aktivní) -->
+          <form action="{% url 'jidelnicek:order_delete' %}" method="post"
+                class="ajax-order-form">
+            {% csrf_token %}
+            <input type="hidden" name="order_item_id" value="{{ oi.id }}">
+            <input type="hidden" name="quantity" value="{{ oi.quantity }}">
+            <button type="submit" 
+                    class="btn btn-outline-danger px-4 py-2 rounded-pill fw-semibold d-flex align-items-center gap-2 order-cancel-btn"
+                    title="Zrušit objednávku">
+              <i class="fas fa-times-circle"></i>
+              <span>Zrušit{% if oi.quantity > 1 %} ({{ oi.quantity }}×){% endif %}</span>
+            </button>
+          </form>
+        {% else %}
+          <!-- STAV: OBJEDNÁNO (neaktivní) -->
+          <button type="button" 
+                  class="btn btn-success px-4 py-2 rounded-pill fw-semibold d-flex align-items-center gap-2"
+                  disabled
+                  title="Objednávka je potvrzena">
+            <i class="fas fa-check-circle"></i>
+            <span>Objednáno{% if oi.quantity > 1 %} ({{ oi.quantity }}×){% endif %}</span>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-orders-state p-5">
+  <div class="text-center">
+    <div class="empty-state-icon mb-4">
+      <i class="fas fa-shopping-cart fa-4x text-muted opacity-25"></i>
+    </div>
+    <h5 class="text-muted mb-3 fw-semibold">Zatím nemáte žádné objednávky</h5>
+    <p class="text-muted mb-4">
+      Prohlédněte si jídelníček a objednejte si své oblíbené jídlo
+    </p>
+    <a href="#menu-section" class="btn btn-primary px-4 py-2 rounded-pill">
+      <i class="fas fa-utensils me-2"></i>
+      Zobrazit jídelníček
+    </a>
+  </div>
+</div>
+{% endif %}
+<style>
+/* Styly pro vylepšený výpis objednávek */
+
+.order-item-card {
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.order-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.order-item-card.order-closed {
+  background: #f8f9fa;
+  opacity: 0.95;
+}
+
+.order-item-card.order-closed:hover {
+  transform: none;
+}
+
+/* Jednotný styl tlačítek */
+.order-actions .btn {
+  min-width: 100px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.order-actions .btn-outline-danger:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.order-actions .btn-success:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Responzivita */
+@media (max-width: 768px) {
+  .order-item-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .order-info {
+    margin-right: 0 !important;
+    margin-bottom: 1rem;
+  }
+
+  .order-actions {
+    width: 100%;
+    text-align: center !important;
+    align-items: stretch !important;
+  }
+
+  .order-actions .btn {
+    width: 100%;
+  }
+
+  .order-total {
+    text-align: center;
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Empty state */
+.empty-orders-state {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 1rem;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Badges a meta info */
+.order-meta .badge {
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+}
+
+.order-title {
+  line-height: 1.4;
+}
+
+/* Animace pro AJAX operace */
+.order-item-card.removing {
+  animation: fadeOut 0.3s ease;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+</style>

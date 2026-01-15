@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Účtenka</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: DejaVu Sans, Arial, Helvetica, sans-serif;  /* ✅ ZMĚNĚNO - DejaVu Sans podporuje diakritiku */
+            font-size: 11pt;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #54ae43;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #54ae43;
+            margin: 5px 0;
+            font-size: 20pt;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-table td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th {
+            background-color: #54ae43;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .items-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .items-table .total-row {
+            background-color: #e8f5e9;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        .items-table .total-row td {
+            padding: 12px 8px;
+            border-top: 2px solid #54ae43;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Výdejní účtenka</h1>
+        <p>Školní jídelna</p>
+    </div>
+    
+    <table class="info-table">
+        <tr>
+            <td>Uživatel:</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+        </tr>
+        <tr>
+            <td>Osobní číslo:</td>
+            <td>{{ user.osobni_cislo }}</td>
+        </tr>
+        <tr>
+            <td>Datum výdeje:</td>
+            <td>{{ order.datum_vydeje|date:"d.m.Y" }}</td>
+        </tr>
+        <tr>
+            <td>Datum objednání:</td>
+            <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+        <tr>
+            <td>Status:</td>
+            <td>
+                {% if order.status == 'vydano' %}
+                    Vydáno
+                {% elif order.status == 'nevyzvednuto' %}
+                    Nevyzvednuto
+                {% else %}
+                    {{ order.get_status_display }}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Druh jídla</th>
+                <th>Název</th>
+                <th class="text-center">Počet</th>
+                <th class="text-right">Cena/ks</th>
+                <th class="text-right">Celkem</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item_data in order_items_with_totals %}
+            <tr>
+                <td>{{ item_data.item.menu_item.druh_jidla.nazev }}</td>
+                <td>{{ item_data.item.menu_item.jidlo.nazev }}</td>
+                <td class="text-center">{{ item_data.item.quantity }}</td>
+                <td class="text-right">{{ item_data.item.cena|floatformat:2 }} Kč</td>
+                <td class="text-right">{{ item_data.total|floatformat:2 }} Kč</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="4" class="text-right">CELKEM K ÚHRADĚ:</td>
+                <td class="text-right">{{ total|floatformat:2 }} Kč</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Vytištěno: {{ order.created_at|date:"d.m.Y H:i" }}</p>
+        <p>Děkujeme za Vaši návštěvu!</p>
+    </div>
+</body>
+</html>

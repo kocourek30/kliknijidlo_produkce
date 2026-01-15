@@ -1,0 +1,214 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .vydej-container {
+        margin: 20px 0;
+    }
+    
+    .vydej-stats {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .vydej-stats h3 {
+        margin-top: 0;
+        color: #333;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .den-sekce {
+        background: white;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    
+    .den-header {
+        background: #417690;
+        color: white;
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .den-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .den-header-info {
+        display: flex;
+        gap: 15px;
+        font-size: 13px;
+    }
+    
+    .den-badge {
+        background: rgba(255,255,255,0.2);
+        padding: 4px 10px;
+        border-radius: 3px;
+    }
+    
+    .uzavirka-badge {
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+    
+    .uzavirka-otevreno {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .uzavirka-uzavreno {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .den-obsah {
+        padding: 15px;
+    }
+    
+    .jidlo-skupina {
+        margin-bottom: 20px;
+    }
+    
+    .jidlo-skupina h4 {
+        margin: 0 0 10px 0;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #79aec8;
+        color: #417690;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .jidlo-polozka {
+        padding: 10px;
+        margin: 8px 0;
+        background: #fafafa;
+        border-left: 3px solid #79aec8;
+    }
+    
+    .jidlo-polozka-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .jidlo-nazev {
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .jidlo-pocet {
+        background: #417690;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .uzivatel-list {
+        font-size: 12px;
+        color: #666;
+        padding-left: 10px;
+    }
+    
+    .uzivatel-list div {
+        padding: 3px 0;
+        border-left: 2px solid #e0e0e0;
+        padding-left: 8px;
+        margin: 2px 0;
+    }
+    
+    .prazdny-den {
+        padding: 20px;
+        text-align: center;
+        color: #999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vydej-container">
+    
+    <!-- Stats -->
+    <div class="vydej-stats">
+        <h3>📋 Přehled výdeje jídel</h3>
+        <p style="margin: 5px 0 0 0; color: #666;">
+            Zobrazeny dny s objednávkami od {{ "now"|date:"j.n.Y" }} na dalších 30 dní
+        </p>
+    </div>
+    
+    <!-- Jednotlivé dny -->
+    {% for den in stats_vsechny_dny %}
+    <div class="den-sekce">
+        <div class="den-header">
+            <h3>{{ den.datum_formatted }}</h3>
+            <div class="den-header-info">
+                <span class="den-badge">{{ den.total_objednavek }} objednávek</span>
+                <span class="den-badge">{{ den.total_kusu }} kusů</span>
+                
+                {% if den.uzavirka_info.uzavreno %}
+                    <span class="uzavirka-badge uzavirka-uzavreno">
+                        🔒 {{ den.uzavirka_info.uzavreno_text }}
+                    </span>
+                {% elif den.uzavirka_info.cas_do_uzavirky %}
+                    <span class="uzavirka-badge uzavirka-otevreno">
+                        ⏰ {{ den.uzavirka_info.uzavreno_text }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="den-obsah">
+            {% if den.druhy %}
+                {% for druh, jidla in den.druhy.items %}
+                <div class="jidlo-skupina">
+                    <h4>{{ druh }}</h4>
+                    
+                    {% for jidlo_nazev, data in jidla.items %}
+                    <div class="jidlo-polozka">
+                        <div class="jidlo-polozka-header">
+                            <span class="jidlo-nazev">{{ jidlo_nazev }}</span>
+                            <span class="jidlo-pocet">{{ data.celkem }} ks</span>
+                        </div>
+                        
+                        <div class="uzivatel-list">
+                            {% for uzivatel in data.uzivatele %}
+                            <div>→ {{ uzivatel.jmeno }} — {{ uzivatel.mnozstvi }} ks (obj. #{{ uzivatel.order_id }})</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="prazdny-den">
+                    Žádné objednávky
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="den-sekce">
+        <div class="prazdny-den">
+            <p>📭 Žádné objednávky v nadcházejících 30 dnech</p>
+        </div>
+    </div>
+    {% endfor %}
+    
+</div>
+
+{{ block.super }}
+{% endblock %}

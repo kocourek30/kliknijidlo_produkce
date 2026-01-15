@@ -1,0 +1,348 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+
+<!-- Import Select2 pro hezčí rozbalovací seznamy (volitelné, pokud ho máš v projektu) -->
+<style>
+    :root {
+        --my-green: #28a745;
+        --my-orange: #fd7e14;
+    }
+
+    #content-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    .custom-period-fields {
+        display: none;
+    }
+    
+    /* Vylepšení tabulky */
+    .report-table {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+    
+    .report-table table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+    
+    .report-table th {
+        background-color: var(--my-green) !important;
+        color: white !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none !important;
+    }
+    
+    .report-table td {
+        border-bottom: 1px solid #eee;
+    }
+
+    .report-table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .report-table tfoot td {
+        background-color: #fff3e0; /* Jemně oranžové pozadí pro součty */
+        font-weight: bold;
+        border-top: 2px solid var(--my-orange);
+    }
+    
+    /* Bootstrap-like tlačítka navigace */
+    .nav-pills .nav-link.active {
+        background-color: var(--my-green);
+    }
+
+    .report-buttons {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .btn-report {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        font-weight: 500;
+        border: 2px solid var(--my-green);
+        color: var(--my-green);
+        background: transparent;
+    }
+
+    .btn-report:hover {
+        background: var(--my-green);
+        color: white;
+    }
+
+    .btn-report.active {
+        background: var(--my-green);
+        color: white;
+        box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+    }
+
+    /* Sekce filtrů */
+    .filter-card {
+        background: #fdfdfd;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-label {
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* Úprava form-control pro Django formy */
+    .filter-card select, .filter-card input {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    .export-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 5px solid var(--my-orange);
+        margin-top: 10px;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const periodSelect = document.querySelector('select[name="period"]');
+    const customFields = document.querySelectorAll('.custom-period-fields');
+    
+    function toggleCustomPeriod() {
+        customFields.forEach(el => {
+            el.style.display = (periodSelect.value === 'custom') ? 'block' : 'none';
+        });
+    }
+    
+    if (periodSelect) {
+        periodSelect.addEventListener('change', toggleCustomPeriod);
+        toggleCustomPeriod();
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1 class="mb-4">📊 Reporty </h1>
+    
+    {# Navigace mezi reporty - Bootstrap Style #}
+    <div class="report-buttons">
+        {% for report in reports %}
+        <a href="?report={{ report.id }}" 
+           class="btn btn-report {% if active_report == report.id %}active{% endif %}">
+            <i class="{{ report.icon }}"></i> {{ report.title }}
+        </a>
+        {% endfor %}
+    </div>
+
+    {# Filtrovací formulář #}
+    <form method="get" class="report-filters">
+        <input type="hidden" name="report" value="{{ active_report }}">
+        
+        <div class="filter-card">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                
+                <div>
+                    <label class="filter-label">Období:</label>
+                    {{ form.period }}
+                </div>
+                
+                <div class="custom-period-fields">
+                    <label class="filter-label">Od data:</label>
+                    {{ form.date_from }}
+                </div>
+                
+                <div class="custom-period-fields">
+                    <label class="filter-label">Do data:</label>
+                    {{ form.date_to }}
+                </div>
+                
+                <div>
+                    <label class="filter-label">Seskupení:</label>
+                    {{ form.grouping }}
+                </div>
+                
+                <div>
+                    <label class="filter-label">Skupina:</label>
+                    {{ form.group }}
+                </div>
+                
+                <div>
+                    <label class="filter-label">Zákazník:</label>
+                    {{ form.customer }}
+                </div>
+                
+                {# NOVÉ: Filtr pro druhy jídel - rozbalovací (Select) #}
+                {% if active_report == 'druhy-jidel' %}
+                <div>
+                    <label class="filter-label">Druhy jídel:</label>
+                    {{ form.food_types }}
+                </div>
+                {% endif %}
+                
+                <div>
+                    <label class="filter-label">Vyhledávání:</label>
+                    {{ form.search }}
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <button type="submit" class="btn btn-success" style="background-color: var(--my-green); border: none; padding: 10px 30px;">
+                    🔍 Aplikovat filtry
+                </button>
+            </div>
+        </div>
+        
+        {# Exporty odděleny do vlastní sekce #}
+        <div class="export-section">
+            <span class="mr-3" style="font-weight: bold; color: var(--my-orange);">EXPORT DAT:</span>
+            <a href="?export=csv&{{ request.GET.urlencode }}" class="btn btn-outline-success btn-sm">📄 CSV Export</a>
+            <a href="?export=pdf&{{ request.GET.urlencode }}" class="btn btn-outline-danger btn-sm">📑 PDF Export</a>
+            
+        </div>
+    </form>
+    
+    {# Tabulka reportu #}
+    <div class="report-table">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    {% if report_type == 'food_types' %}
+                        {% if grouping == 'day' %}
+                        <th>Datum</th>
+                        <th>Zákazník</th>
+                        <th>Druh jídla</th>
+                        <th>Název jídla</th>
+                        <th style="text-align: right;">Počet ks</th>
+                        <th style="text-align: right;">Plná částka</th>
+                        <th style="text-align: right;">Dotace</th>
+                        <th style="text-align: right;">K platbě</th>
+                        {% else %}
+                        <th>Zákazník</th>
+                        <th>Druh jídla</th>
+                        <th>Název jídla</th>
+                        <th style="text-align: right;">Celkem ks</th>
+                        <th style="text-align: right;">Plná částka</th>
+                        <th style="text-align: right;">Dotace</th>
+                        <th style="text-align: right;">K platbě</th>
+                        {% endif %}
+                    {% else %}
+                        <th>Zákazník</th>
+                        <th>Osobní číslo</th>
+                        <th>ID médium</th>
+                        {% if grouping == 'day' %}
+                        <th>Datum</th>
+                        <th>Stav</th>
+                        {% endif %}
+                        {% if report_type == 'items' %}
+                            {% if grouping == 'day' %}
+                            <th>Jídlo</th>
+                            <th style="text-align: right;">Počet ks</th>
+                            {% else %}
+                            <th style="text-align: right;">Počet položek</th>
+                            <th>Jídla</th>
+                            {% endif %}
+                        {% endif %}
+                        <th style="text-align: right;">Plná částka</th>
+                        <th style="text-align: right;">Dotace</th>
+                        <th style="text-align: right;">K platbě</th>
+                        {% if report_type == 'amounts' and grouping == 'total' %}
+                        <th style="text-align: right;">Počet objednávek</th>
+                        {% endif %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_data %}
+                <tr>
+                    {% if report_type == 'food_types' %}
+                        {% if grouping == 'day' %}
+                        <td>{{ row.date|date:"d.m.Y" }}</td>
+                        <td>{{ row.user }}</td>
+                        <td>{{ row.food_type }}</td>
+                        <td>{{ row.food_name }}</td>
+                        <td style="text-align: right;">{{ row.quantity }} ks</td>
+                        <td style="text-align: right;">{{ row.unclaimed_total }} Kč</td>
+                        <td style="text-align: right;">{{ row.dotace }} Kč</td>
+                        <td style="text-align: right;">{{ row.final_price }} Kč</td>
+                        {% else %}
+                        <td>{{ row.user }}</td>
+                        <td>{{ row.food_type }}</td>
+                        <td>{{ row.food_name }}</td>
+                        <td style="text-align: right;">{{ row.quantity }} ks</td>
+                        <td style="text-align: right;">{{ row.unclaimed_total }} Kč</td>
+                        <td style="text-align: right;">{{ row.dotace }} Kč</td>
+                        <td style="text-align: right;">{{ row.final_price }} Kč</td>
+                        {% endif %}
+                    {% else %}
+                        <td>{{ row.user }}</td>
+                        <td>{{ row.osobni_cislo|default:"-" }}</td>
+                        <td>{{ row.identifikacni_medium|default:"-" }}</td>
+                        {% if grouping == 'day' %}
+                        <td>{{ row.date|date:"d.m.Y" }}</td>
+                        <td>{{ row.status }}</td>
+                        {% endif %}
+                        {% if report_type == 'items' %}
+                            {% if grouping == 'day' %}
+                            <td>{{ row.jidlo_nazev }}</td>
+                            <td style="text-align: right;">{{ row.quantity }} ks</td>
+                            {% else %}
+                            <td style="text-align: right;">{{ row.items_count }} ks</td>
+                            <td>{{ row.items_names }}</td>
+                            {% endif %}
+                        {% endif %}
+                        <td style="text-align: right;">{{ row.unclaimed_total }} Kč</td>
+                        <td style="text-align: right;">{{ row.dotace }} Kč</td>
+                        <td style="text-align: right;">{{ row.final_price }} Kč</td>
+                        {% if report_type == 'amounts' and grouping == 'total' %}
+                        <td style="text-align: right;">{{ row.count }} ks</td>
+                        {% endif %}
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="20" class="text-center py-5">Žádná data pro zobrazení</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    {% if report_type == 'food_types' %}
+                        <td colspan="{% if grouping == 'day' %}4{% else %}3{% endif %}">CELKEM:</td>
+                        <td style="text-align: right;">{{ totals.total_portions }} ks</td>
+                        <td style="text-align: right;">{{ totals.unclaimed_total }} Kč</td>
+                        <td style="text-align: right;">{{ totals.dotace }} Kč</td>
+                        <td style="text-align: right;">{{ totals.final_price }} Kč</td>
+                    {% else %}
+                        <td colspan="{% if grouping == 'day' %}{% if report_type == 'items' %}7{% else %}5{% endif %}{% else %}{% if report_type == 'items' %}5{% else %}3{% endif %}{% endif %}">CELKEM:</td>
+                        <td style="text-align: right;">{{ totals.unclaimed_total }} Kč</td>
+                        <td style="text-align: right;">{{ totals.dotace }} Kč</td>
+                        <td style="text-align: right;">{{ totals.final_price }} Kč</td>
+                        {% if grouping == 'total' %}<td></td>{% endif %}
+                    {% endif %}
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+
+
+{% block object-tools %}{% endblock %}  <!-- ✅ SCHOVÁ tlačítko "PŘIDAT" -->
+
+{% block result_list %}
+<div class="results">
+    <table id="result_list">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Uživatel</th>
+                <th>Datum objednávky</th>
+                <th>Storno</th>
+                <th>Položky</th>
+                <th>Ks</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                {% for value in result %}
+                    <td>{{ value|safe }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

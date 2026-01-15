@@ -1,0 +1,144 @@
+﻿[
+{
+  "model": "dotace.dotacnipolitika",
+  "pk": 2,
+  "fields": {
+    "skupina": [
+      "Student"
+    ],
+    "procento": "0.00",
+    "castka": "0.00",
+    "mesicni_limit": 0
+  }
+},
+{
+  "model": "dotace.dotacnipolitika",
+  "pk": 3,
+  "fields": {
+    "skupina": [
+      "JÝdelna"
+    ],
+    "procento": "0.00",
+    "castka": "0.00",
+    "mesicni_limit": 0
+  }
+},
+{
+  "model": "dotace.dotacnipolitika",
+  "pk": 4,
+  "fields": {
+    "skupina": [
+      "admin"
+    ],
+    "procento": "0.00",
+    "castka": "0.00",
+    "mesicni_limit": 0
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 2,
+  "fields": {
+    "dotacni_politika": 2,
+    "jidelniskova_skupina": 1,
+    "procento": null,
+    "castka": "50.00"
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 3,
+  "fields": {
+    "dotacni_politika": 2,
+    "jidelniskova_skupina": 2,
+    "procento": "50.00",
+    "castka": null
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 4,
+  "fields": {
+    "dotacni_politika": 3,
+    "jidelniskova_skupina": 1,
+    "procento": "90.00",
+    "castka": null
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 5,
+  "fields": {
+    "dotacni_politika": 3,
+    "jidelniskova_skupina": 2,
+    "procento": "90.00",
+    "castka": null
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 6,
+  "fields": {
+    "dotacni_politika": 4,
+    "jidelniskova_skupina": 4,
+    "procento": "0.00",
+    "castka": "0.00"
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 7,
+  "fields": {
+    "dotacni_politika": 4,
+    "jidelniskova_skupina": 1,
+    "procento": "50.00",
+    "castka": null
+  }
+},
+{
+  "model": "dotace.dotaceprojidelniskouskupinu",
+  "pk": 8,
+  "fields": {
+    "dotacni_politika": 4,
+    "jidelniskova_skupina": 2,
+    "procento": "50.00",
+    "castka": null
+  }
+},
+{
+  "model": "dotace.skupinovenastaveni",
+  "pk": 2,
+  "fields": {
+    "skupina": [
+      "Student"
+    ],
+    "cerpani_debit": false,
+    "nutnost_dobit": true,
+    "debit_limit": "0.00"
+  }
+},
+{
+  "model": "dotace.skupinovenastaveni",
+  "pk": 3,
+  "fields": {
+    "skupina": [
+      "admin"
+    ],
+    "cerpani_debit": true,
+    "nutnost_dobit": false,
+    "debit_limit": "-1000.00"
+  }
+},
+{
+  "model": "dotace.skupinovenastaveni",
+  "pk": 4,
+  "fields": {
+    "skupina": [
+      "JÝdelna"
+    ],
+    "cerpani_debit": true,
+    "nutnost_dobit": false,
+    "debit_limit": "-100.00"
+  }
+}
+]

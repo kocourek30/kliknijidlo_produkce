@@ -1,0 +1,173 @@
+﻿[
+{
+  "model": "canteen_settings.canteencontact",
+  "pk": 1,
+  "fields": {
+    "canteen_name": "JÝdelna Kliknijidlo.cz",
+    "contact_name": "FrantiÜek VomßŔka",
+    "contact_email": "test@test.test",
+    "contact_phone": "777 777 777",
+    "address": "Hladovß 15, \r\n555 55 Mßmehlad"
+  }
+},
+{
+  "model": "canteen_settings.orderclosingtime",
+  "pk": 1,
+  "fields": {
+    "je_aktivni": true,
+    "advance_days": 1,
+    "closing_time": "19:00:00"
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 1,
+  "fields": {
+    "group": [
+      "Student"
+    ],
+    "druh_jidla": 1,
+    "max_orders_per_day": 1
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 3,
+  "fields": {
+    "group": [
+      "admin"
+    ],
+    "druh_jidla": 1,
+    "max_orders_per_day": 0
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 4,
+  "fields": {
+    "group": [
+      "Student"
+    ],
+    "druh_jidla": 4,
+    "max_orders_per_day": 0
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 5,
+  "fields": {
+    "group": [
+      "Student"
+    ],
+    "druh_jidla": 3,
+    "max_orders_per_day": 1
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 6,
+  "fields": {
+    "group": [
+      "Student"
+    ],
+    "druh_jidla": 2,
+    "max_orders_per_day": 1
+  }
+},
+{
+  "model": "canteen_settings.grouporderlimit",
+  "pk": 7,
+  "fields": {
+    "group": [
+      "admin"
+    ],
+    "druh_jidla": 4,
+    "max_orders_per_day": 0
+  }
+},
+{
+  "model": "canteen_settings.mealpickuptime",
+  "pk": 1,
+  "fields": {
+    "druh_jidla": 1,
+    "pickup_from": "11:00:00",
+    "pickup_to": "23:59:00"
+  }
+},
+{
+  "model": "canteen_settings.mealpickuptime",
+  "pk": 2,
+  "fields": {
+    "druh_jidla": 2,
+    "pickup_from": "11:00:00",
+    "pickup_to": "23:59:00"
+  }
+},
+{
+  "model": "canteen_settings.mealpickuptime",
+  "pk": 3,
+  "fields": {
+    "druh_jidla": 4,
+    "pickup_from": "11:00:00",
+    "pickup_to": "23:59:00"
+  }
+},
+{
+  "model": "canteen_settings.mealpickuptime",
+  "pk": 4,
+  "fields": {
+    "druh_jidla": 5,
+    "pickup_from": "17:00:00",
+    "pickup_to": "23:59:00"
+  }
+},
+{
+  "model": "canteen_settings.mealpickuptime",
+  "pk": 5,
+  "fields": {
+    "druh_jidla": 3,
+    "pickup_from": "06:00:00",
+    "pickup_to": "23:59:00"
+  }
+},
+{
+  "model": "canteen_settings.operatingdays",
+  "pk": 6,
+  "fields": {
+    "day_of_week": 0,
+    "is_operating": true
+  }
+},
+{
+  "model": "canteen_settings.operatingdays",
+  "pk": 7,
+  "fields": {
+    "day_of_week": 1,
+    "is_operating": true
+  }
+},
+{
+  "model": "canteen_settings.operatingdays",
+  "pk": 8,
+  "fields": {
+    "day_of_week": 2,
+    "is_operating": true
+  }
+},
+{
+  "model": "canteen_settings.operatingdays",
+  "pk": 9,
+  "fields": {
+    "day_of_week": 3,
+    "is_operating": true
+  }
+},
+{
+  "model": "canteen_settings.operatingdays",
+  "pk": 10,
+  "fields": {
+    "day_of_week": 4,
+    "is_operating": true
+  }
+}
+]

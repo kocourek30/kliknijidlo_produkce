@@ -1,0 +1,279 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Klikni jídlo – přihlášení</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        body {
+            background: url("{% static 'images/background-login.png' %}") center center no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .login-center-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 64px;
+        }
+        .login-form-card {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.95) 0%,
+                rgba(255,255,255,0.85) 30%,
+                rgba(255,255,255,0.5) 100%
+            );
+            border-radius: 12px;
+            padding: 2.5rem 2rem 2rem 2rem;
+            text-align: center;
+            width: 100%;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.97);
+            animation: loginBoxIn 0.8s cubic-bezier(.4,.8,.4,1) forwards;
+        }
+        @keyframes loginBoxIn {
+            0% {opacity: 0; transform: scale(0.95);}
+            50% {opacity: 0.7; transform: scale(1.01);}
+            80% {opacity: 1; transform: scale(0.99);}
+            100% {opacity: 1; transform: scale(1);}
+        }
+        .login-form-card::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; top: 0;
+            height: 10px;
+            border-top-left-radius: inherit;
+            border-top-right-radius: inherit;
+            background: linear-gradient(45deg, #3CB371, #FF9800);
+            z-index: 1;
+        }
+        .login-form-logo {
+            max-width: 35%;
+            margin-bottom: 24px;
+            margin-top: -20px;
+            transition: box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .login-form-logo:active {
+            box-shadow: 0 0 0 3px #3CB37133;
+        }
+        .card-hand-img {
+            max-width: 30%;
+            display: inline-block;
+            animation: handShake 1.8s cubic-bezier(.54,.03,.38,.86) infinite;
+            transform-origin: 70% 90%;
+        }
+        @keyframes handShake {
+            0%,100% {transform: rotate(0);}
+            8% {transform: rotate(-7deg);}
+            14% {transform: rotate(8deg);}
+            18% {transform: rotate(-10deg);}
+            22% {transform: rotate(5deg);}
+            26% {transform: rotate(0);}
+            70% {transform: rotate(0);}
+        }
+
+        .rfid-status {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 20px 0;
+            min-height: 2rem;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .rfid-loading {
+            background: linear-gradient(90deg, #FFEAA7, #FDCB6E);
+            color: #856404;
+            animation: pulse 1.5s infinite;
+        }
+        .rfid-success {
+            background: linear-gradient(90deg, #D4EDDA, #C3E6CB);
+            color: #155724;
+        }
+        .rfid-error {
+            background: linear-gradient(90deg, #F8D7DA, #F5C6CB);
+            color: #721C24;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            border-top: 2px solid white;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 99;
+            font-size: 0.95em;
+            letter-spacing: 0.7px;
+        }
+        .btn-green {
+            background-color: #3CB371;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+                .btn-green:hover {
+            background-color: #FF9800;
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="login-center-box">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="login-form-card">
+                    <div class="row mb-2">
+                        <div class="col-12 text-center">
+                            <a href="" title="Refresh stránky">
+                                <img src="{% static 'images/logo.png' %}" alt="Klikni jídlo logo" class="login-form-logo" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 px-2">
+                            
+                            <form id="manual-login-form" method="post" action="{% url 'login' %}">
+                                {% csrf_token %}
+                                <div class="mb-3 text-start">
+                                    <label for="username" class="form-label">
+                                        <i class="fa-solid fa-user"></i> Uživatelské jméno
+                                    </label>
+                                    <input type="text" class="form-control" id="username" name="username" required />
+                                </div>
+                                <div class="mb-3 text-start">
+                                    <label for="password" class="form-label">
+                                        <i class="fa-solid fa-key"></i> Heslo
+                                    </label>
+                                    <input type="password" class="form-control" id="password" name="password" required />
+                                </div>
+                                <button type="submit" class="btn btn-green w-100">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Přihlásit se
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    &copy; Klikni jídlo 2025
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const messageEl = document.getElementById('message');
+    const rfidStatusEl = document.getElementById('rfid-status');
+    const rfidErrorEl = document.getElementById('rfid-error');
+    const API_URL = '{% url "rfid-login-api" %}';
+
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onopen = () => {
+        console.log('WebSocket připojen');
+        messageEl.textContent = 'Pro přihlášení přiložte RFID kartu...';
+        hideAllStatus();
+    };
+
+    ws.onerror = (event) => {
+        console.error('WebSocket error:', event);
+        rfidErrorEl.textContent = '❌ Chyba připojení k čtečce - spusťte Node.js server';
+        rfidErrorEl.style.display = 'block';
+    };
+
+    ws.onclose = (event) => {
+        console.warn('WebSocket uzavřen:', event);
+        rfidErrorEl.textContent = `🔌 WebSocket uzavřen (kód: ${event.code})`;
+        rfidErrorEl.style.display = 'block';
+    };
+
+    ws.onmessage = (event) => {
+        try {
+            const message = JSON.parse(event.data);
+            if (message.type === 'rfid' && message.rfid) {
+                const rfid = message.rfid.trim();
+                console.log('Načtená RFID:', rfid);
+
+                rfidStatusEl.textContent = `📱 Načteno: ${rfid}`;
+                rfidStatusEl.className = 'rfid-status rfid-loading';
+                rfidStatusEl.style.display = 'block';
+                rfidErrorEl.style.display = 'none';
+
+                axios.post(
+                    API_URL,
+                    JSON.stringify({ rfid }),
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }
+                )
+                .then(resp => {
+                    hideAllStatus();
+                    if (resp.data.success) {
+                        rfidStatusEl.textContent = `✅ Vítej ${resp.data.username}! Přihlášen...`;
+                        rfidStatusEl.className = 'rfid-status rfid-success';
+                        rfidStatusEl.style.display = 'block';
+                        messageEl.textContent = 'Přesměrovávám na dashboard...';
+
+                        setTimeout(() => {
+                            window.location.href = "{% url 'jidelnicek:dashboard' %}";
+                        }, 1500);
+                    } else {
+                        rfidErrorEl.textContent = `❌ ${resp.data.error || 'Neznámá chyba'}`;
+                        rfidErrorEl.style.display = 'block';
+                        setTimeout(hideAllStatus, 4000);
+                    }
+                })
+                .catch(err => {
+                    console.error('Chyba API:', err);
+                    hideAllStatus();
+                    let errorMsg = '❌ Chyba spojení s API';
+                    if (err.response?.data?.error) {
+                        // zobrazí např. "Uživatel nenalezen"
+                        errorMsg = `❌ ${err.response.data.error}`;
+                    }
+                    rfidErrorEl.textContent = errorMsg;
+                    rfidErrorEl.style.display = 'block';
+                    setTimeout(hideAllStatus, 5000);
+                });
+            }
+        } catch (e) {
+            console.error('Chyba parsování WebSocket zprávy:', e);
+        }
+    };
+
+    function hideAllStatus() {
+        rfidStatusEl.style.display = 'none';
+        rfidErrorEl.style.display = 'none';
+    }
+</script>
+</body>
+</html>

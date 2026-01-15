@@ -1,0 +1,19 @@
+{
+  "name": "rfid-bridge",
+  "version": "1.0.0",
+  "description": "RFID Bridge pro kliknijidlo",
+  "main": "rfid_bridge.js",
+  "scripts": {
+    "start": "node rfid_bridge.js",
+    "dev": "nodemon rfid_bridge.js",
+    "status": "curl http://localhost:3001/status"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "serialport": "^12.0.0",
+    "socket.io": "^4.7.5",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  }
+}

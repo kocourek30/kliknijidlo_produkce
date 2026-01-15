@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Úspěšné přihlášení{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-success">
+        Přihlášení proběhlo úspěšně. Vítejte, {{ user.username }}!
+    </div>
+</div>
+{% endblock %}

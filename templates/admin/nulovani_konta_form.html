@@ -1,0 +1,89 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Nulování kont zákazníků s debetem</h1>
+
+    <div class="col-md-12">
+        <form method="post" action="{% url 'admin:users_vklad_nulovani_konta' %}">
+  {% csrf_token %}
+  <div class="form-group mb-3">
+    <label for="filterInput">Filtr uživatelů:</label>
+    <input class="form-control" id="filterInput" type="text" placeholder="Filtr jméno, osobní číslo, uživatelské jméno..." autocomplete="off">
+  </div>
+
+  <button type="button" id="selectAllBtn" class="btn btn-outline-secondary mb-3">Vybrat vše</button>
+  <div class="table-responsive mb-3">
+    <table class="table table-bordered table-hover bg-white" id="users-table">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Osobní číslo</th>
+          <th scope="col">Křestní jméno</th>
+          <th scope="col">Příjmení</th>
+          <th scope="col">Uživatelské jméno</th>
+          <th scope="col">Zůstatek</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>
+            <input type="checkbox" name="users" value="{{ user.id }}">
+          </td>
+          <td>{{ user.osobni_cislo|default:"–" }}</td>
+          <td>{{ user.first_name|default:"–" }}</td>
+          <td>{{ user.last_name|default:"–" }}</td>
+          <td><span class="text-success fw-bold">{{ user.username }}</span></td>
+          <td>
+            {% if user.aktualni_zustatek < 0 %}
+              <span class="text-danger fw-bold">{{ user.aktualni_zustatek }} Kč</span>
+            {% else %}
+              {{ user.aktualni_zustatek }} Kč
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-muted text-center">Žádní zákazníci s povoleným debetem.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <button type="submit" class="btn btn-danger">Spustit nulování kont</button>
+  <a href="{% url 'admin:users_vklad_changelist' %}" class="btn btn-secondary">Zpět na vklady</a>
+</form>
+    
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var filterInput = document.getElementById('filterInput');
+  var usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+  filterInput.addEventListener('keyup', function() {
+    var term = filterInput.value.toLowerCase();
+    Array.from(usersTable.rows).forEach(function(row) {
+      var text = row.innerText.toLowerCase();
+      row.style.display = text.indexOf(term) >= 0 ? "" : "none";
+    });
+  });
+
+  // Vybrat vše / zrušit výběr funkce
+  var selectAllBtn = document.getElementById('selectAllBtn');
+  var allCheckboxes = function() {
+    return usersTable.querySelectorAll('input[type="checkbox"][name="users"]');
+  };
+  var allSelected = false;
+  selectAllBtn.addEventListener('click', function() {
+    allSelected = !allSelected;
+    Array.from(allCheckboxes()).forEach(function(checkbox) {
+      checkbox.checked = allSelected;
+    });
+    selectAllBtn.textContent = allSelected ? "Zrušit výběr" : "Vybrat vše";
+  });
+});
+</script>
+
+{% endblock %}

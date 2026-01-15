@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+  <!-- Levý sloupec 3: Menu + DETAIL KONTA -->
+  <div class="col-md-3 mb-4">
+    <h4><i class="fas fa-user me-2"></i>{{ user.first_name }} {{ user.last_name }}</h4>
+    
+    <!-- Detail konta -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-light">
+        <strong class="text-muted"><i class="fa-solid fa-wallet me-2"></i>Detail konta</strong>
+      </div>
+      <div class="card-body p-3 small">
+        {% if not user_settings.cerpani_debit %}
+        <div class="d-flex justify-content-between mb-2">
+          <span><i class="fa-solid fa-arrow-down text-success me-1"></i>Vklady celkem:</span>
+          <span class="text-success fw-semibold">{{ balance_breakdown.vklady|floatformat:2 }} Kč</span>
+        </div>
+        <hr class="my-2">
+        {% endif %}
+        
+        <div class="d-flex justify-content-between mb-2">
+          <span><i class="fa-solid fa-utensils text-danger me-1"></i>Vydané objednávky:</span>
+          <span class="text-danger fw-semibold">-{{ balance_breakdown.vydane|floatformat:2 }} Kč</span>
+        </div>
+        
+        <div class="d-flex justify-content-between mb-2">
+          <span><i class="fa-solid fa-clock text-warning me-1"></i>Zálohy za objednávky:</span>
+          <span class="text-warning fw-semibold">-{{ balance_breakdown.zalohy|floatformat:2 }} Kč</span>
+        </div>
+        
+        <hr class="my-2 border-2">
+        
+        <div class="d-flex justify-content-between">
+          <span class="fw-bold fs-6">
+            <i class="fa-solid fa-equals me-1"></i>
+            {% if user_settings.cerpani_debit %}
+              Aktuální spotřeba:
+            {% else %}
+              Aktuální zůstatek:
+            {% endif %}
+          </span>
+          <span class="fw-bold fs-5 {% if balance_breakdown.celkem >= 0 %}text-success{% else %}text-danger{% endif %}">
+            {{ balance_breakdown.celkem|floatformat:2 }} Kč
+          </span>
+        </div>
+        
+        {% if user_settings.cerpani_debit %}
+        <div class="mt-2 pt-2 border-top">
+          <div class="d-flex justify-content-between text-muted">
+            <span><i class="fa-solid fa-gauge-high me-1"></i>Debetní limit:</span>
+            <span class="fw-semibold">{{ user_settings.debit_limit|floatformat:2 }} Kč</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <nav class="nav flex-column nav-pills mt-3" aria-orientation="vertical">
+      <a class="nav-link" href="{% url 'users:user-profile' %}">
+        <i class="fas fa-id-card me-1"></i>Můj profil
+      </a>
+      <a class="nav-link" href="{% url 'users:consumption-history' %}">
+        <i class="fas fa-history me-1"></i>Historie konzumace
+      </a>
+      <a class="nav-link active" href="{% url 'users:account-history' %}">
+        <i class="fas fa-file-invoice-dollar me-1"></i>Historie konta
+      </a>
+    </nav>
+  </div>
+
+  <!-- Pravý sloupec 9: Historie konta -->
+  <div class="col-md-9">
+    <h2><i class="fas fa-file-invoice-dollar me-2"></i>Historie konta</h2>
+    <p class="text-muted">Chronologický přehled všech transakcí na vašem kontě</p>
+    
+    <!-- ✅ FILTR - ZELENÁ BARVA -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header" style="background-color: #54ae43; color: white;">
+        <strong><i class="fas fa-filter me-2"></i>Filtrovat období</strong>
+      </div>
+      <div class="card-body">
+        <form method="get" action="{% url 'users:account-history' %}" id="filterForm">
+          <div class="row g-3">
+            <div class="col-md-12">
+              <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="filter" id="filter_all" value="all" {% if filter_type == 'all' %}checked{% endif %} onchange="toggleCustomDates()">
+                <label class="btn btn-outline-success" for="filter_all">Vše</label>
+                
+                <input type="radio" class="btn-check" name="filter" id="filter_current_month" value="current_month" {% if filter_type == 'current_month' %}checked{% endif %} onchange="toggleCustomDates()">
+                <label class="btn btn-outline-success" for="filter_current_month">Aktuální měsíc</label>
+                
+                <input type="radio" class="btn-check" name="filter" id="filter_last_month" value="last_month" {% if filter_type == 'last_month' %}checked{% endif %} onchange="toggleCustomDates()">
+                <label class="btn btn-outline-success" for="filter_last_month">Minulý měsíc</label>
+                
+                <input type="radio" class="btn-check" name="filter" id="filter_current_year" value="current_year" {% if filter_type == 'current_year' %}checked{% endif %} onchange="toggleCustomDates()">
+                <label class="btn btn-outline-success" for="filter_current_year">Aktuální rok</label>
+                
+                <input type="radio" class="btn-check" name="filter" id="filter_custom" value="custom" {% if filter_type == 'custom' %}checked{% endif %} onchange="toggleCustomDates()">
+                <label class="btn btn-outline-success" for="filter_custom">Vlastní období</label>
+              </div>
+            </div>
+            
+            <div class="col-md-5" id="date_from_container" style="display: {% if filter_type == 'custom' %}block{% else %}none{% endif %};">
+              <label for="date_from" class="form-label">Od:</label>
+              <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}" placeholder="dd/mm/rrrr">
+            </div>
+            
+            <div class="col-md-5" id="date_to_container" style="display: {% if filter_type == 'custom' %}block{% else %}none{% endif %};">
+              <label for="date_to" class="form-label">Do:</label>
+              <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}" placeholder="dd/mm/rrrr">
+            </div>
+            
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" class="btn w-100" style="background-color: #54ae43; color: white;">
+                <i class="fas fa-search me-1"></i>Filtrovat
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    {% if transactions %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 12%;">Datum</th>
+            <th style="width: 10%;">Typ</th>
+            <th style="width: 40%;">Popis</th>
+            <th class="text-end" style="width: 12%;">Částka</th>
+            <th class="text-end" style="width: 13%;">Stav po transakci</th>
+            <th class="text-center" style="width: 13%;">Akce</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transaction in transactions %}
+          <tr>
+            <td>
+              <small class="text-muted">{{ transaction.datum|date:"d.m.Y" }}</small><br>
+              <small class="text-muted">{{ transaction.datum|date:"H:i" }}</small>
+            </td>
+            <td>
+              {% if transaction.typ == 'vklad' %}
+                <span class="badge bg-success">
+                  <i class="fas fa-plus-circle me-1"></i>Vklad
+                </span>
+              {% else %}
+                <span class="badge bg-danger">
+                  <i class="fas fa-utensils me-1"></i>Čerpání
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <small>{{ transaction.popis }}</small>
+            </td>
+            <td class="text-end">
+              {% if transaction.typ == 'vklad' %}
+                <strong class="text-success">+{{ transaction.castka|floatformat:2 }} Kč</strong>
+              {% else %}
+                <strong class="text-danger">-{{ transaction.castka|floatformat:2 }} Kč</strong>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <strong class="{% if transaction.zustatek_po >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ transaction.zustatek_po|floatformat:2 }} Kč
+              </strong>
+            </td>
+            <td class="text-center">
+              {% if transaction.typ == 'cerpani' and transaction.order %}
+                <a href="{% url 'users:receipt-pdf' transaction.order.id %}" 
+                   class="btn btn-sm"
+                   style="background-color: #54ae43; color: white;"
+                   target="_blank"
+                   title="Zobrazit účtenku">
+                  <i class="fas fa-receipt me-1"></i>Účtenka
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <!-- ✅ SOUČTY -->
+        <tfoot class="table-light">
+          <tr class="fw-bold">
+            <td colspan="3" class="text-end">CELKEM - Vklady:</td>
+            <td class="text-end text-success">+{{ total_vklady|floatformat:2 }} Kč</td>
+            <td colspan="2"></td>
+          </tr>
+          <tr class="fw-bold">
+            <td colspan="3" class="text-end">CELKEM - Čerpání:</td>
+            <td class="text-end text-danger">-{{ total_cerpani|floatformat:2 }} Kč</td>
+            <td colspan="2"></td>
+          </tr>
+          <tr class="fw-bold bg-light">
+            <td colspan="3" class="text-end fs-5">BILANCE:</td>
+            <td class="text-end fs-5 {% if bilance >= 0 %}text-success{% else %}text-danger{% endif %}">
+              {{ bilance|floatformat:2 }} Kč
+            </td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>
+      Pro zvolené období nemáte žádné transakce.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  /* ✅ Stylování pro date input - zobrazení formátu dd/mm/rrrr */
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    display: flex;
+  }
+  
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-year-field {
+    padding: 2px;
+  }
+  
+  /* Zvýraznění aktivního radio tlačítka zelenou */
+  .btn-check:checked + .btn-outline-success {
+    background-color: #54ae43;
+    border-color: #54ae43;
+    color: white;
+  }
+  
+  .btn-outline-success:hover {
+    background-color: #54ae43;
+    border-color: #54ae43;
+    color: white;
+  }
+</style>
+
+<script>
+function toggleCustomDates() {
+  const customRadio = document.getElementById('filter_custom');
+  const dateFromContainer = document.getElementById('date_from_container');
+  const dateToContainer = document.getElementById('date_to_container');
+  
+  if (customRadio.checked) {
+    dateFromContainer.style.display = 'block';
+    dateToContainer.style.display = 'block';
+  } else {
+    dateFromContainer.style.display = 'none';
+    dateToContainer.style.display = 'none';
+    // Auto-submit při výběru přednastavených filtrů
+    document.getElementById('filterForm').submit();
+  }
+}
+
+// ✅ Nastavení formátu date inputu na dd/mm/rrrr
+document.addEventListener('DOMContentLoaded', function() {
+  const dateInputs = document.querySelectorAll('input[type="date"]');
+  dateInputs.forEach(input => {
+    // Převod value z YYYY-MM-DD na DD/MM/RRRR pro zobrazení
+    if (input.value) {
+      const parts = input.value.split('-');
+      if (parts.length === 3) {
+        // Nastavení atributu pro správné zobrazení
+        input.setAttribute('data-date', parts[2] + '/' + parts[1] + '/' + parts[0]);
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

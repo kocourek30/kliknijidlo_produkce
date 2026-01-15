@@ -1,0 +1,29 @@
+﻿[
+{
+  "model": "vydej_jidel.vydajicicas",
+  "pk": 1,
+  "fields": {
+    "druh_jidla": 1,
+    "cas_od": "11:00:00",
+    "cas_do": "14:00:00"
+  }
+},
+{
+  "model": "vydej_jidel.vydajicicas",
+  "pk": 2,
+  "fields": {
+    "druh_jidla": 2,
+    "cas_od": "11:00:00",
+    "cas_do": "14:00:00"
+  }
+},
+{
+  "model": "vydej_jidel.vydajicicas",
+  "pk": 3,
+  "fields": {
+    "druh_jidla": 3,
+    "cas_od": "07:00:00",
+    "cas_do": "09:00:00"
+  }
+}
+]

@@ -1,0 +1,32 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script>
+    window.jidelnicek_data = JSON.parse('{{ jidelnicek_data|escapejs }}');
+  </script>
+  <script src="{% static 'objednavky/js/filter_polozky.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  {{ block.super }}
+
+  {# Najdeme wrapper okolo pole datum_vydeje a přidáme pod něj místo pro položky #}
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const datumFieldWrapper = document.querySelector("#id_datum_vydeje").closest(".form-row");
+    if (datumFieldWrapper) {
+      const polozkyDiv = document.createElement("div");
+      polozkyDiv.id = "polozky-inline-container";
+      polozkyDiv.style.border = "1px solid #ccc";
+      polozkyDiv.style.padding = "10px";
+      polozkyDiv.style.marginTop = "10px";
+      polozkyDiv.textContent = "Vyber datum a položky jídelníčku se zde zobrazí.";
+      datumFieldWrapper.insertAdjacentElement("afterend", polozkyDiv);
+    } else {
+      console.warn("Pole datum_vydeje nebylo nalezeno pro vložení jídelníčku.");
+    }
+  });
+  </script>
+{% endblock %}

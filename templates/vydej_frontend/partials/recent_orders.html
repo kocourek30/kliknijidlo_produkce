@@ -1,0 +1,54 @@
+{% if completed_orders %}
+    {% for prepared in completed_orders %}
+    <div class="recent-order-item">
+        <div class="recent-order-header">
+            <div class="recent-order-user">
+                <i class="fas fa-check-circle"></i>
+                {{ prepared.order.user.get_full_name }}
+                {% if prepared.order.status == 'castecne-vydano' %}
+                    <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65rem;">
+                        částečně
+                    </span>
+                {% endif %}
+            </div>
+            <div class="recent-order-time">
+                <i class="far fa-clock"></i>
+                <strong style="color: #4CAF50;">{{ prepared.order.datum_vydani|date:"H:i:s" }}</strong>
+            </div>
+        </div>
+        
+        <div style="font-size: 0.8rem; color: #888; margin: 0.3rem 0 0.5rem 1.5rem;">
+            <i class="far fa-calendar-alt"></i>
+            Objednáno na: <strong style="color: #4CAF50;">{{ prepared.order.datum_vydeje|date:"d.m.Y" }}</strong>
+        </div>
+        
+        <ul class="recent-order-list">
+            {% for item in prepared.issued_items %}
+            <li>
+                <span class="item-qty">{{ item.quantity }}×</span>
+                {{ item.menu_item.jidlo.nazev }}
+                {% if item.datum_vydani %}
+                <span style="font-size: 0.75rem; color: #aaa; margin-left: 0.3rem;">
+                    {{ item.datum_vydani|date:"H:i" }}
+                </span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        
+        {% if prepared.pending_items %}
+        <div style="margin: 0.5rem 0 0 1.5rem; padding: 0.4rem; background: #fff3cd; border-radius: 4px; font-size: 0.75rem; color: #856404;">
+            <i class="fas fa-clock"></i> Čeká: 
+            {% for item in prepared.pending_items %}
+                {{ item.quantity }}× {{ item.menu_item.jidlo.nazev }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state" style="padding: 2rem 0.5rem;">
+        <i class="fas fa-inbox" style="font-size: 2.5rem;"></i>
+        <p style="font-size: 0.9rem;">Zatím nic vydáno</p>
+    </div>
+{% endif %}

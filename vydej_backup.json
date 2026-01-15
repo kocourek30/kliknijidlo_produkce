@@ -1,0 +1,754 @@
+﻿[
+{
+  "model": "vydej.vydejniuctenka",
+  "pk": 47,
+  "fields": {
+    "order": 379,
+    "datum_vydeje": "2026-01-11T19:27:04.666Z",
+    "vydal": [
+      "tomaskocourek"
+    ],
+    "celkova_cena": "3140.00",
+    "celkova_dotace": "950.00",
+    "poznamka": null
+  }
+},
+{
+  "model": "vydej.vydejniuctenka",
+  "pk": 48,
+  "fields": {
+    "order": 380,
+    "datum_vydeje": "2026-01-11T21:38:59.551Z",
+    "vydal": [
+      "tomaskocourek"
+    ],
+    "celkova_cena": "150.00",
+    "celkova_dotace": "50.00",
+    "poznamka": null
+  }
+},
+{
+  "model": "vydej.vydejniuctenka",
+  "pk": 49,
+  "fields": {
+    "order": 381,
+    "datum_vydeje": "2026-01-11T21:46:45.929Z",
+    "vydal": [
+      "tomaskocourek"
+    ],
+    "celkova_cena": "150.00",
+    "celkova_dotace": "50.00",
+    "poznamka": null
+  }
+},
+{
+  "model": "vydej.vydejniuctenka",
+  "pk": 50,
+  "fields": {
+    "order": 382,
+    "datum_vydeje": "2026-01-12T14:31:22.543Z",
+    "vydal": [
+      "tomaskocourek"
+    ],
+    "celkova_cena": "77.50",
+    "celkova_dotace": "77.50",
+    "poznamka": null
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 115,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 116,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 117,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 118,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 119,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 120,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 121,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 122,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 123,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 124,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 125,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 126,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 127,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 128,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 129,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 130,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 131,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 132,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 133,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 134,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 135,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 136,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 137,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 138,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 139,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 140,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 141,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 142,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 143,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 144,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 145,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 146,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 147,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 148,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 149,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 150,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 151,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 152,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 153,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 154,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 155,
+  "fields": {
+    "uctenka": 48,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 156,
+  "fields": {
+    "uctenka": 48,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 157,
+  "fields": {
+    "uctenka": 49,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 158,
+  "fields": {
+    "uctenka": 49,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 159,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 160,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 161,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 162,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 163,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 164,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 165,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 166,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 167,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "druh_jidla": "VeŔe°e",
+    "mnozstvi": 1,
+    "cena_za_kus": "100.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 168,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 169,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "╚okolßdovř muffin",
+    "druh_jidla": "Dezert / Ovoce",
+    "mnozstvi": 1,
+    "cena_za_kus": "55.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 170,
+  "fields": {
+    "uctenka": 47,
+    "nazev_jidla": "Bßbovka",
+    "druh_jidla": "SnÝdaný",
+    "mnozstvi": 1,
+    "cena_za_kus": "25.00",
+    "dotace_za_kus": "0.00"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 171,
+  "fields": {
+    "uctenka": 50,
+    "nazev_jidla": "Koprovß omßŔka",
+    "druh_jidla": "HlavnÝ jÝdlo",
+    "mnozstvi": 1,
+    "cena_za_kus": "27.50",
+    "dotace_za_kus": "27.50"
+  }
+},
+{
+  "model": "vydej.polozkauctenky",
+  "pk": 172,
+  "fields": {
+    "uctenka": 50,
+    "nazev_jidla": "╚oŔkovß polÚvka",
+    "druh_jidla": "PolÚvka",
+    "mnozstvi": 1,
+    "cena_za_kus": "50.00",
+    "dotace_za_kus": "50.00"
+  }
+}
+]

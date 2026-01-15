@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Nabídka jídel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Jídelníček na dnes</h2>
+    {% if jidelnicek %}
+        <ul>
+        {% for polozka in jidelnicek.polozky.all %}
+            <li>{{ polozka.druh_jidla.nazev }} - {{ polozka.jidlo.nazev }} ({{ polozka.jidlo.cena }} Kč)</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Žádný jídelníček k zobrazení.</p>
+    {% endif %}
+</div>
+{% endblock %}

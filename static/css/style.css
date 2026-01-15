@@ -1,0 +1,145 @@
+:root {
+  --primary-color: #54ae43;
+  --accent-color: #f28c28;
+}
+.zelena-barva {
+    background-color: #54ae43 !important;
+}
+.oranzova-barva {
+    background-color: #f28c28 !important;
+}
+.zelena-barva2 {
+    background-color: hsl(105, 46%, 57%) !important;
+}
+
+.nav-link.active {
+    background-color: var(--accent-color) !important;
+    
+}
+
+.navbar-text {
+    color: white !important;
+   
+}
+
+.gradient-box {
+  background: linear-gradient(-45deg,
+    var(--accent-color) 0%,
+    var(--accent-color) 35%,
+    var(--primary-color) 35%,
+    var(--primary-color) 100%
+  );
+}
+
+.menu{
+    background:wheat;
+}
+
+.gradient-border {
+  border: 3px solid transparent;
+  background: linear-gradient(var(--primary-color) 0%, var(--primary-color) 65%, var(--accent-color) 65%, var(--accent-color) 100%) border-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: -3px; bottom: -3px; right: -3px;
+  background: linear-gradient(-45deg, #54ae43 0%, #54ae43 65%, #f28c28 65%, #f28c28 100%);
+  border-radius: 0.5rem;
+  z-index: -1;
+}
+
+.my-orders-wrapper {
+    font-size: 0.9rem;
+}
+
+.my-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.my-order-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.my-order-row:last-child {
+    border-bottom: none;
+}
+
+.my-order-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-order-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.my-order-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.my-order-meta span {
+    display: inline;
+}
+
+.my-order-form {
+    flex-shrink: 0;
+}
+
+.my-order-remove-btn {
+    border: none;
+    background: transparent;
+    color: #b91c1c;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.my-order-remove-btn:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+}
+
+.my-order-remove-btn i {
+    font-size: 0.9rem;
+}
+
+.my-orders-empty {
+    text-align: left;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.my-orders-empty i {
+    color: #d1d5db;
+}
+
+@media (max-width: 768px) {
+    .my-order-row {
+        align-items: flex-start;
+    }
+}
+
+

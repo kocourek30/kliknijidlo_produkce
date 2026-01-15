@@ -1,0 +1,346 @@
+﻿[
+{
+  "model": "objednavky.order",
+  "pk": 379,
+  "fields": {
+    "user": [
+      "tomaskocourek"
+    ],
+    "datum_vydeje": "2026-01-11",
+    "created_at": "2026-01-11T19:26:28.636Z",
+    "updated_at": "2026-01-11T22:19:18.641Z",
+    "datum_vydani": "2026-01-11T22:19:18.641Z",
+    "status": "vydano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 380,
+  "fields": {
+    "user": [
+      "tomas"
+    ],
+    "datum_vydeje": "2026-01-11",
+    "created_at": "2026-01-11T21:37:01.508Z",
+    "updated_at": "2026-01-11T21:38:59.579Z",
+    "datum_vydani": "2026-01-11T21:38:59.579Z",
+    "status": "vydano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 381,
+  "fields": {
+    "user": [
+      "test"
+    ],
+    "datum_vydeje": "2026-01-11",
+    "created_at": "2026-01-11T21:37:01.518Z",
+    "updated_at": "2026-01-11T21:46:45.962Z",
+    "datum_vydani": "2026-01-11T21:46:45.962Z",
+    "status": "vydano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 382,
+  "fields": {
+    "user": [
+      "tomaskocourek"
+    ],
+    "datum_vydeje": "2026-01-12",
+    "created_at": "2026-01-12T12:59:29.438Z",
+    "updated_at": "2026-01-12T14:31:24.134Z",
+    "datum_vydani": "2026-01-12T14:31:24.134Z",
+    "status": "vydano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 383,
+  "fields": {
+    "user": [
+      "tomaskocourek"
+    ],
+    "datum_vydeje": "2026-01-13",
+    "created_at": "2026-01-12T21:03:00.188Z",
+    "updated_at": "2026-01-12T21:03:00.189Z",
+    "datum_vydani": null,
+    "status": "objednano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 384,
+  "fields": {
+    "user": [
+      "tomaskocourek"
+    ],
+    "datum_vydeje": "2026-01-20",
+    "created_at": "2026-01-12T22:26:03.404Z",
+    "updated_at": "2026-01-12T22:26:03.404Z",
+    "datum_vydani": null,
+    "status": "objednano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 385,
+  "fields": {
+    "user": [
+      "tomaskocourek"
+    ],
+    "datum_vydeje": "2026-01-19",
+    "created_at": "2026-01-12T23:35:20.639Z",
+    "updated_at": "2026-01-12T23:35:20.639Z",
+    "datum_vydani": null,
+    "status": "objednano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.order",
+  "pk": 386,
+  "fields": {
+    "user": [
+      "tomas"
+    ],
+    "datum_vydeje": "2026-01-19",
+    "created_at": "2026-01-13T14:36:59.756Z",
+    "updated_at": "2026-01-13T14:36:59.756Z",
+    "datum_vydani": null,
+    "status": "objednano",
+    "storno_user": null,
+    "storno_datum": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1176,
+  "fields": {
+    "order": 380,
+    "menu_item": 66,
+    "quantity": 1,
+    "cena": "100.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T21:38:59.563Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1177,
+  "fields": {
+    "order": 380,
+    "menu_item": 67,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T21:38:59.571Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1178,
+  "fields": {
+    "order": 381,
+    "menu_item": 66,
+    "quantity": 1,
+    "cena": "100.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T21:46:45.943Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1179,
+  "fields": {
+    "order": 381,
+    "menu_item": 67,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T21:46:45.953Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1189,
+  "fields": {
+    "order": 379,
+    "menu_item": 65,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T22:19:18.595Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1190,
+  "fields": {
+    "order": 379,
+    "menu_item": 66,
+    "quantity": 1,
+    "cena": "100.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T22:19:18.605Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1191,
+  "fields": {
+    "order": 379,
+    "menu_item": 67,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T22:19:18.614Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1192,
+  "fields": {
+    "order": 379,
+    "menu_item": 68,
+    "quantity": 1,
+    "cena": "55.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T22:19:18.623Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1193,
+  "fields": {
+    "order": 379,
+    "menu_item": 69,
+    "quantity": 1,
+    "cena": "25.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-11T22:19:18.633Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1194,
+  "fields": {
+    "order": 382,
+    "menu_item": 53,
+    "quantity": 1,
+    "cena": "27.50",
+    "vydano": true,
+    "datum_vydani": "2026-01-12T14:31:22.558Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1195,
+  "fields": {
+    "order": 382,
+    "menu_item": 54,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": true,
+    "datum_vydani": "2026-01-12T14:31:24.128Z"
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1196,
+  "fields": {
+    "order": 383,
+    "menu_item": 55,
+    "quantity": 1,
+    "cena": "100.00",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1215,
+  "fields": {
+    "order": 384,
+    "menu_item": 60,
+    "quantity": 1,
+    "cena": "97.50",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1216,
+  "fields": {
+    "order": 385,
+    "menu_item": 71,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1218,
+  "fields": {
+    "order": 385,
+    "menu_item": 72,
+    "quantity": 1,
+    "cena": "97.50",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1219,
+  "fields": {
+    "order": 385,
+    "menu_item": 56,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1220,
+  "fields": {
+    "order": 386,
+    "menu_item": 56,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": false,
+    "datum_vydani": null
+  }
+},
+{
+  "model": "objednavky.orderitem",
+  "pk": 1221,
+  "fields": {
+    "order": 386,
+    "menu_item": 71,
+    "quantity": 1,
+    "cena": "50.00",
+    "vydano": false,
+    "datum_vydani": null
+  }
+}
+]

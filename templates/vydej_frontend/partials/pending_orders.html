@@ -1,0 +1,51 @@
+{% if pending_orders %}
+    {% for prepared in pending_orders %}
+    <div class="customer-card" data-order-id="{{ prepared.order.id }}">
+        <div class="customer-header">
+            <div class="customer-name">
+                <i class="fas fa-user"></i>
+                {{ prepared.order.user.get_full_name }}
+                {% if prepared.order.status == 'castecne-vydano' %}
+                    <span class="badge bg-info text-dark ms-2" style="font-size: 0.7rem;">
+                        <i class="fas fa-info-circle"></i> Částečně vydáno
+                    </span>
+                {% endif %}
+            </div>
+            <button class="btn btn-warning btn-sm btn-issue-order" 
+                    data-order-id="{{ prepared.order.id }}"
+                    title="Vydat aktuální položky">
+                <i class="fas fa-check"></i> Vydat nyní
+            </button>
+        </div>
+        
+        <div style="font-size: 0.85rem; color: #666; margin-bottom: 0.5rem; padding-left: 0.25rem;">
+            <i class="far fa-calendar-alt"></i>
+            Objednáno na: <strong style="color: #2196F3;">{{ prepared.order.datum_vydeje|date:"d.m.Y" }}</strong>
+        </div>
+        
+        <div class="customer-items-list">
+            <ul class="order-items-list">
+                {% for item in prepared.current_items %}
+                <li class="order-item">
+                    <span class="item-quantity">{{ item.quantity }}×</span>
+                    <span class="item-name">{{ item.menu_item.jidlo.nazev }}</span>
+                    <span class="item-type">({{ item.menu_item.druh_jidla.nazev }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        {% if prepared.has_other_items %}
+        <div style="margin-top: 0.5rem; padding: 0.4rem; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #1565c0;">
+            <i class="fas fa-info-circle"></i> 
+            Další položky k výdeji později
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-check-circle"></i>
+        <p>Žádné objednávky k výdeji</p>
+    </div>
+{% endif %}

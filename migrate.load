@@ -1,0 +1,16 @@
+LOAD DATABASE
+    FROM sqlite://db.sqlite3
+    INTO postgresql://kliknijidlo_user:dev_password_123@localhost/kliknijidlo_dev
+
+WITH include drop, create tables, create indexes, reset sequences
+
+SET work_mem to '16MB', maintenance_work_mem to '512 MB'
+
+CAST type datetime to timestamptz
+     drop default drop not null using zero-dates-to-null,
+     type date drop not null drop default using zero-dates-to-null
+
+EXCLUDING TABLE NAMES MATCHING 'django_session'
+
+ALTER SCHEMA 'main' RENAME TO 'public'
+;

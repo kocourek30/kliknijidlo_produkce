@@ -1,0 +1,84 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Migration files (volitelné - pokud chceš sdílet)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Media files
+/media/
+
+# Certificates
+*.pem
+*.key
+*.crt
+
+# Backup files
+*.bak
+*.tmp
+
+# ===== SECURITY: NEVER COMMIT THESE =====
+# SSH Keys (should NOT be in repository!)
+1
+1.pub
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.ppk
+
+# Production Database
+db.sqlite3
+*.db
+*.sqlite
+
+# Logs directory
+logs/
+*.log
+
+# Sensitive configuration
+secrets.json
+production_settings.py

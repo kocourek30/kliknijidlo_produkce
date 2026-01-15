@@ -1,0 +1,164 @@
+﻿[
+{
+  "model": "users.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$0lwz8wIROXCogtOiFvf1r9$NVOakI1Ah5jyyR/pQ1sjzAV66UvJ5DtcFQvmPkfw4uU=",
+    "last_login": "2026-01-13T14:36:46.526Z",
+    "is_superuser": false,
+    "username": "tomas",
+    "first_name": "TomßÜ student",
+    "last_name": "Kocourek",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-18T22:14:50Z",
+    "identifikacni_medium": "2100B34B09",
+    "osobni_cislo": "1234",
+    "groups": [
+      [
+        "Student"
+      ]
+    ],
+    "user_permissions": [],
+    "alergeny": [
+      2
+    ]
+  }
+},
+{
+  "model": "users.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$HmkYm2nF105SRIh6lj9FKO$j+xVXEVB9fXfYTDdyyj9uZclmftSY17lTsYGHS5cCjE=",
+    "last_login": "2026-01-11T16:13:23Z",
+    "is_superuser": false,
+    "username": "test",
+    "first_name": "Test student",
+    "last_name": "Test",
+    "email": "test@test.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-18T23:34:51Z",
+    "identifikacni_medium": "0111408076",
+    "osobni_cislo": "4567",
+    "groups": [
+      [
+        "Student"
+      ]
+    ],
+    "user_permissions": [],
+    "alergeny": [
+      1
+    ]
+  }
+},
+{
+  "model": "users.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$tmLbeO2bQDHU8IUFXRjTE6$kj7LJngdGCqTehyO8NgXIZZOo/LL2+bXK+eyW9yzVoY=",
+    "last_login": "2026-01-13T10:13:46.397Z",
+    "is_superuser": false,
+    "username": "jidelna",
+    "first_name": "JÝdelna",
+    "last_name": "Kocourek",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-19T00:02:57Z",
+    "identifikacni_medium": null,
+    "osobni_cislo": "1234",
+    "groups": [
+      [
+        "JÝdelna"
+      ]
+    ],
+    "user_permissions": [],
+    "alergeny": []
+  }
+},
+{
+  "model": "users.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$WXjYnFv1R5aEjsI3sPLTHY$oDmEoZwJb6TiC6fMyaNM0l3ZPLvRvMRzmybdTjlbmpE=",
+    "last_login": "2026-01-13T14:35:17.567Z",
+    "is_superuser": true,
+    "username": "tomaskocourek",
+    "first_name": "TomßÜ Admin",
+    "last_name": "Kocourek",
+    "email": "kocourek30@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-22T14:34:04Z",
+    "identifikacni_medium": "2404211AFFFF12E0",
+    "osobni_cislo": "9874",
+    "groups": [
+      [
+        "admin"
+      ],
+      [
+        "JÝdelna"
+      ]
+    ],
+    "user_permissions": [],
+    "alergeny": []
+  }
+},
+{
+  "model": "users.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$S6ZmggCjYXDtZZin60uuCu$Szye0ENA/O2kxPL3A4+CurxRN+dckQc9FSxa8VfzWO0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "vydej_terminal",
+    "first_name": "VřdejnÝ",
+    "last_name": "Terminßl",
+    "email": "vydej@kliknijidlo.cz",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-11T17:50:25.378Z",
+    "identifikacni_medium": null,
+    "osobni_cislo": null,
+    "groups": [],
+    "user_permissions": [],
+    "alergeny": []
+  }
+},
+{
+  "model": "users.vklad",
+  "pk": 2,
+  "fields": {
+    "uzivatel": [
+      "test"
+    ],
+    "castka": "5000.00",
+    "datum": "2025-11-18T23:50:51Z",
+    "poznamka": "",
+    "status": "standard"
+  }
+},
+{
+  "model": "users.vklad",
+  "pk": 5,
+  "fields": {
+    "uzivatel": [
+      "tomas"
+    ],
+    "castka": "100.00",
+    "datum": "2025-11-27T23:10:06Z",
+    "poznamka": "",
+    "status": "standard"
+  }
+},
+{
+  "model": "users.vklad",
+  "pk": 7,
+  "fields": {
+    "uzivatel": [
+      "tomas"
+    ],
+    "castka": "200.00",
+    "datum": "2025-12-26T15:49:18Z",
+    "poznamka": "",
+    "status": "standard"
+  }
+}
+]

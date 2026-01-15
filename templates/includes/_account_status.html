@@ -1,0 +1,15 @@
+<div class="account-balance-modern">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <i class="fas fa-coins fa-lg me-3"></i>
+    <span class="h6 mb-0  {% if balance >= 0 %}{% else %}{% endif %}">
+      {{ balance}} Kč
+    </span>
+  </div>
+  
+  {% if balance_settings.cerpani_debit and balance_settings.debit_limit > 0 %}
+  <div class="d-flex align-items-center text-muted small">
+    <i class="fas fa-arrow-down me-1"></i>
+    <span>Debetní limit: <strong>-{{ balance_settings.debit_limit}} Kč</strong></span>
+  </div>
+  {% endif %}
+</div>

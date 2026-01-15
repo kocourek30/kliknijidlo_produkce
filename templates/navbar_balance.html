@@ -1,0 +1,8 @@
+<span class="{% if balance >= 0 %} {% else %} {% endif %}">
+  {{ balance }} Kč
+</span>
+{% if balance < settings.debit_limit %}
+  <small class="ms-1">
+    - {{ settings.debit_limit }} Kč
+  </small>
+{% endif %}

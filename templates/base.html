@@ -1,0 +1,397 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}KlikniJídlo{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        /* Sticky footer layout přes flexbox */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f5f7fa;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex-shrink: 0;
+        }
+
+        /*
+         * ZELENÁ HLAVIČKA (#54ae43)
+         */
+        .header-green {
+            background-color: #54ae43 !important;
+        }
+
+        .header-green.navbar {
+            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.18);
+        }
+
+        /*
+         * ORANŽOVÁ PATIČKA (#f28f28)
+         */
+        .footer-orange {
+            background-color: #f28f28 !important;
+        }
+
+        .header-green a,
+        .footer-orange a {
+            color: #ffffff;
+        }
+
+        .footer-orange a:hover {
+            color: #fff3e0;
+            text-decoration: underline;
+        }
+
+        .main-wrapper {
+            padding-inline: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .main-wrapper {
+                padding-inline: 2rem;
+            }
+        }
+
+        footer .vr {
+            opacity: 0.5;
+        }
+
+        footer h5 {
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        footer .small {
+            font-size: 0.9rem;
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- NAVBAR - ZELENÁ (#54ae43) -->
+    <nav class="navbar navbar-expand-lg navbar-dark header-green mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'jidelnicek:dashboard' %}">
+              <img src="{% static 'images/logo-white.png' %}" alt="Logo jídelna"
+                   style="height:50px;max-width:160px;" class="me-2">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarMain" aria-controls="navbarMain"
+                    aria-expanded="false" aria-label="Přepnout navigaci">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
+                <ul class="navbar-nav align-items-center">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item me-3">
+                        <span class="navbar-text">
+                            <i class="fas fa-user me-1"></i> Přihlášen:
+                            <a href="{% url 'users:user-profile' %}" class="text-white text-decoration-underline">
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            </a>
+                            <span class="mx-2 text-white-50">|</span>
+                            <i class="fa-solid fa-coins me-1"></i>
+                            Stav konta:
+                            <span id="navbar-balance-container" class="fw-semibold">
+{% include "includes/_navbar_balance.html" with user_balance=user.aktualni_zustatek %}                            </span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                Odhlásit
+                            </button>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HLAVNÍ OBSAH -->
+    <main class="container-fluid main-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+  <!-- PATIČKA - POSLEDNÍ VERZE (kontakty v jednom panelu) -->
+<style>
+/* Hlavní kontejner patičky s tmavším zeleným přechodem */
+.footer-green {
+  background: linear-gradient(180deg, #54ae43 0%, #3a7a2e 100%);
+  /* ORANŽOVÝ BORDER */
+  border-top: 10px solid #f28f28;
+  
+  /* ČISTO ŠEDÉ STÍNY */
+  box-shadow: 
+    0 6px 25px rgba(0,0,0,0.25),
+    0 20px 55px rgba(0,0,0,0.35),
+    0 30px 70px rgba(0,0,0,0.2),
+    inset 0 -1px 8px rgba(0,0,0,0.15),
+    inset 0 2px 6px rgba(255,255,255,0.15);
+  color: #fff;
+  margin-top: 2.5rem;
+}
+
+/* Glassmorphism boxy */
+.footer-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+/* VELKÝ JEDINÝ PANEL se všemi kontakty */
+.contact-panel {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 2rem 2rem 2rem 220px; /* Prostor pro široké logo */
+  margin-bottom: 0;
+  overflow: visible;
+  height: 100%;
+}
+
+/* Logo - širší pro lepší vzhled */
+.logo-overflow {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  height: 130%;
+  z-index: 1;
+  margin-right: 2em;
+}
+
+.logo-overflow img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  transform: rotate(-10deg);
+}
+
+/* Obsah panelu - VŠICHNI KONTAKTY */
+.panel-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+/* Horní sekce - Název + adresa + web */
+.panel-header {
+  flex: 1;
+}
+
+.panel-header h4 {
+  margin-bottom: 0.5rem;
+}
+
+/* Kontaktní řada - Osoba, Tel, Email */
+.contact-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Jednotlivé kontakty */
+.contact-item {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Ikony kontaktů */
+.icon-circle-small {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Minimalistický seznam výdejů */
+.pickup-list-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pickup-item-mini {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.pickup-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pickup-time-mini {
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.95);
+  color: #3a7a2e;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.contact-link {
+  color: #fff !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.site-link {
+  color: rgba(255,255,255,0.9) !important;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.site-link:hover {
+  color: #fff !important;
+}
+</style>
+
+<footer class="footer-green py-4 mt-5">
+  <div class="container-fluid">
+    <div class="row g-4">
+      
+      <!-- 🏢 2/3: VEĽKÝ JEDINÝ PANEL se všemi kontakty -->
+      <div class="col-lg-8">
+        <div class="footer-box">
+          <div class="contact-panel">
+            <!-- Logo přetéká -->
+            <div class="logo-overflow">
+              <img src="{% static 'images/kliknijidlo-v3-footer.png' %}" alt="{{ canteen_contact.canteen_name }}">
+            </div>
+            
+            <!-- VŠICHNI KONTAKTY v jednom panelu -->
+            <div class="panel-content">
+              <!-- Horní sekce: Název + adresa + web -->
+              <div class="panel-header">
+                <h4 class="mb-1 fw-bold">{{ canteen_contact.canteen_name|default:"Jídelna Kliknijídlo.cz" }}</h4>
+                <p class="mb-2 opacity-90 small lh-sm">
+                  <i class="fas fa-map-marker-alt me-2"></i>{{ canteen_contact.address }}
+                </p>
+                <a href="https://kliknijidlo.cz" target="_blank" class="site-link d-inline-flex align-items-center">
+                  <i class="fas fa-external-link-alt me-1"></i> kliknijidlo.cz
+                </a>
+              </div>
+              
+              <!-- Kontaktní řada: Osoba + Tel + Email -->
+              <div class="contact-row">
+                <div class="contact-item">
+                  <div class="icon-circle-small"><i class="fas fa-user"></i></div>
+                  <div class="small">
+                    <span class="opacity-75 d-block">Zodpovědná osoba</span>
+                    <strong>{{ canteen_contact.contact_name }}</strong>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <div class="icon-circle-small"><i class="fas fa-phone"></i></div>
+                  <div class="small">
+                    <span class="opacity-75 d-block" >Telefon</span>
+                    <a href="tel:{{ canteen_contact.contact_phone }}" class="contact-link">
+                      <strong>{{ canteen_contact.contact_phone }}</strong>
+                    </a>
+                  </div>
+                </div>
+                <div class="contact-item">
+                  <div class="icon-circle-small"><i class="fas fa-envelope"></i></div>
+                  <div class="small">
+                    <span class="opacity-75 d-block">Email</span>
+                    <a href="mailto:{{ canteen_contact.contact_email }}" class="contact-link">
+                      <strong>{{ canteen_contact.contact_email }}</strong>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⏰ 1/3: Výdej (Minimalistický) -->
+      <div class="col-lg-4">
+        <div class="footer-box">
+          <div class="pickup-list-mini">
+            {% for pickup in meal_pickup_times %}
+              <div class="pickup-item-mini">
+                <div class="pickup-info">
+                  <i class="{{ pickup.druh_jidla.ikona|default:'fas fa-utensils' }} opacity-75" style="width: 16px;"></i>
+                  <span>{{ pickup.druh_jidla.nazev }}</span>
+                </div>
+                <span class="pickup-time-mini">
+                  {{ pickup.pickup_from|time:"H:i" }}–{{ pickup.pickup_to|time:"H:i" }}
+                </span>
+              </div>
+            {% empty %}
+              <div class="text-center py-2 opacity-50 small">Časy nejsou nastaveny</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+    
+    <!-- Spodní linka -->
+    <div class="text-center mt-4 pt-3 border-top border-white border-opacity-10 small opacity-75">
+      &copy; 2026 {{ canteen_contact.canteen_name|default:"Jídelna" }}. Všechna práva vyhrazena.
+    </div>
+  </div>
+</footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

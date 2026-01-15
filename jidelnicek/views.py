@@ -1,0 +1,583 @@
+from datetime import datetime, date, timedelta
+from django.shortcuts import redirect, render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from django.urls import reverse
+from urllib.parse import urlencode
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.db.models import Sum, F
+from django.db import transaction
+from decimal import Decimal
+from collections import defaultdict
+
+from .services import (
+    get_user_price_for_item,
+    get_effective_closing_time,
+    get_group_order_limit,
+    check_user_balance_for_item,
+    get_user_order_items,
+    validate_item_for_display,
+    build_calendar_context,
+    build_day_menu_context,
+    build_week_menu_context,
+    build_month_menu_context,
+    build_dashboard_redirect_from_post,
+    can_order_for_date,
+    check_group_limit,
+)
+from canteen_settings.models import (
+    CanteenContact, MealPickupTime, OperatingDays, OperatingExceptions
+)
+
+from objednavky.models import Order, OrderItem
+from jidelnicek.models import PolozkaJidelnicku, Jidelnicek
+from dotace.models import SkupinoveNastaveni
+
+
+def get_item_name(item):
+    for field_name in ['nazev', 'name', 'title', 'nazev_jidla']:
+        if hasattr(item, field_name):
+            return str(getattr(item, field_name))
+    try:
+        return str(item)
+    except:
+        return f"Položka ID={item.id}"
+
+
+def get_user_balance_settings(user):
+    try:
+        group = user.groups.first()
+        if group and hasattr(group, 'nastaveni'):
+            nastaveni = group.nastaveni
+            return {
+                'cerpani_debit': nastaveni.cerpani_debit,
+                'nutnost_dobit': nastaveni.nutnost_dobit,
+                'debit_limit': nastaveni.debit_limit,
+            }
+    except Exception as e:
+        print(f"⚠️ Chyba načítání nastavení: {e}")
+    return {
+        'cerpani_debit': False,
+        'nutnost_dobit': True,
+        'debit_limit': Decimal('0'),
+    }
+
+
+def get_user_balance(user):
+    """✅ SPRÁVNĚ načte aktuální zůstatek z DB"""
+    try:
+        # Předpokládám User model s custom polem aktualni_zustatek
+        return Decimal(str(user.aktualni_zustatek or 0))
+    except:
+        # Fallback: spočítat z objednávek
+        total_orders = OrderItem.objects.filter(
+            order__user=user,
+            order__datum_vydeje__gte=date.today().replace(day=1)
+        ).aggregate(total=Sum(F('quantity') * F('cena')))['total'] or 0
+        return Decimal('0') - Decimal(str(total_orders or 0))
+
+def update_user_balance(user, amount_change):
+    """✅ SPRÁVNĚ aktualizuje zůstatek v DB"""
+    try:
+        with transaction.atomic():
+            current_balance = get_user_balance(user)
+            new_balance = current_balance + amount_change
+            
+            print(f"💳 UPDATE: {current_balance} → {new_balance} ({amount_change:+.2f})")
+            
+            # Uložení do User modelu
+            user.aktualni_zustatek = new_balance
+            user.save(update_fields=['aktualni_zustatek'])
+            
+            user.refresh_from_db()
+            print(f"✅ SAVED: {user.aktualni_zustatek}")
+            return True
+    except Exception as e:
+        print(f"❌ Balance ERROR: {e}")
+        return False
+
+
+@login_required
+def menu_item_partial(request):
+    menu_item_id = request.GET.get('menu_item_id')
+    menu_date_str = request.GET.get('menu_date')
+
+    if not menu_item_id or not menu_date_str:
+        return JsonResponse({'error': 'missing_params'}, status=400)
+
+    try:
+        menu_item = PolozkaJidelnicku.objects.get(id=menu_item_id)
+        target_date = datetime.strptime(menu_date_str, '%Y-%m-%d').date()
+    except PolozkaJidelnicku.DoesNotExist:
+        return JsonResponse({'error': 'not_found'}, status=404)
+    except ValueError:
+        return JsonResponse({'error': 'bad_date'}, status=400)
+
+    validate_item_for_display(request.user, menu_item, target_date)
+
+    order_item = OrderItem.objects.filter(
+        order__user=request.user,
+        order__datum_vydeje=target_date,
+        menu_item=menu_item
+    ).first()
+
+    context = {
+        'item': menu_item,
+        'date': target_date,
+        'current_order_item_id': order_item.id if order_item else None,
+        'current_quantity': order_item.quantity if order_item else 0,
+    }
+
+    html = render_to_string('jidelnicek_item.html', context, request=request)
+    return JsonResponse({'html': html})
+
+
+@login_required
+def my_orders_partial(request):
+    my_order_items = get_user_order_items(request.user)
+    html = render_to_string('includes/_my_orders.html', {
+        'my_order_items': my_order_items,
+    }, request=request)
+    return JsonResponse({'html': html})
+
+
+def get_first_menu_day_from(from_date: date) -> date | None:
+    """
+    Najde první den s jídelníčkem od from_date (včetně) dál.
+    """
+    nearest_menu = (
+        Jidelnicek.objects
+        .filter(platnost_do__gte=from_date)
+        .order_by('platnost_od')
+        .first()
+    )
+    if not nearest_menu:
+        return None
+    return max(nearest_menu.platnost_od, from_date)
+
+
+@login_required
+def dashboard(request):
+    """Hlavní dashboard - data jen od dneška dál, kalendář lze listovat libovolně"""
+    today = date.today()
+
+    date_str = request.GET.get('date')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+    filter_type = request.GET.get('filter', 'date')
+
+    # ✅ PRIORITA 1: reference_date pro week/month z URL date parametru
+    reference_date = None
+    if date_str:
+        try:
+            reference_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+
+    # ✅ PRIORITA 2: selected_date pro kalendář a denní zobrazení
+    if month and year:
+        selected_date = date(int(year), int(month), 1)
+    elif filter_type == 'date' and reference_date:
+        selected_date = reference_date
+    else:
+        selected_date = today
+
+    # ✅ Kalendář vždy podle selected_date (bez změn)
+    first_day_month = selected_date.replace(day=1)
+    if first_day_month.month == 12:
+        last_day_month = date(first_day_month.year + 1, 1, 1) - timedelta(days=1)
+    else:
+        last_day_month = first_day_month.replace(month=first_day_month.month + 1, day=1) - timedelta(days=1)
+
+    calendar_ctx = build_calendar_context(selected_date)
+
+    # ✅ DEN - vždy selected_date
+    day_ctx = build_day_menu_context(request.user, selected_date)
+
+    # ✅ TÝDEN - POUŽIJ reference_date (pokud existuje), jinak selected_date
+    week_reference = reference_date or selected_date
+    week_ctx = build_week_menu_context(request.user, week_reference)
+
+    # Filtruj dny >= today, ale zachovej reference
+    week_ctx['menu_items_by_day'] = {
+        d: items for d, items in week_ctx.get('menu_items_by_day', {}).items() if d >= today
+    }
+    week_ctx['menu_items_by_day_grouped'] = {
+        d: items for d, items in week_ctx.get('menu_items_by_day_grouped', {}).items() if d >= today
+    }
+
+    # ✅ MĚSÍC - měsíc z selected_date, ale data od today
+    month_first = max(first_day_month, today)
+    month_ctx = build_month_menu_context(request.user, month_first, last_day_month)
+
+    # ✅ FIXED POŘADÍ JÍDEL: 1.Polévka 2.Hlavní 3.Dezert 4.Večeře
+    DRUH_ORDER = {
+        'Polévka': 1,
+        'Hlavní jídlo': 2,
+        'Dezert': 3,
+        'Večeře': 4,
+        # fallback pro jiné druhy
+        'Salát': 5,
+        'Nápoj': 6
+    }
+
+    def sort_druhy_by_priority(items_by_druh):
+        """Seřadí druhy jídel podle pevné priority"""
+        if not items_by_druh:
+            return {}
+        sorted_druhy = sorted(
+            items_by_druh.keys(),
+            key=lambda d: DRUH_ORDER.get(d.nazev, 99)
+        )
+        return {druh: items_by_druh[druh] for druh in sorted_druhy}
+
+    # Seřaď TÝDEN
+    if week_ctx.get('menu_items_by_day_grouped'):
+        for day in week_ctx['menu_items_by_day_grouped']:
+            week_ctx['menu_items_by_day_grouped'][day] = sort_druhy_by_priority(
+                week_ctx['menu_items_by_day_grouped'][day]
+            )
+
+    # Seřaď MĚSÍC
+    if month_ctx.get('menu_items_by_day_grouped'):
+        for day in month_ctx['menu_items_by_day_grouped']:
+            month_ctx['menu_items_by_day_grouped'][day] = sort_druhy_by_priority(
+                month_ctx['menu_items_by_day_grouped'][day]
+            )
+
+    # Seřaď DEN
+    if day_ctx.get('menu_items_grouped'):
+        day_ctx['menu_items_grouped'] = sort_druhy_by_priority(day_ctx['menu_items_grouped'])
+
+    # Výběr dat podle filtru
+    if filter_type == 'week':
+        menu_items_by_day_grouped = week_ctx.get('menu_items_by_day_grouped', {})
+    elif filter_type == 'month':
+        menu_items_by_day_grouped = month_ctx.get('menu_items_by_day_grouped', {})
+    else:
+        menu_items_by_day_grouped = {}
+
+    week_items_count = sum(len(items) for items in week_ctx.get('menu_items_by_day', {}).values())
+    month_items_count = sum(len(items) for items in month_ctx.get('menu_items_by_day', {}).values())
+
+    my_order_items = get_user_order_items(request.user)
+    my_orders = Order.objects.filter(
+        user=request.user,
+        datum_vydeje__month=selected_date.month,
+        datum_vydeje__year=selected_date.year
+    ).prefetch_related('items').order_by('-created_at')[:5]
+
+    context = {
+        **calendar_ctx,
+        'menu_items': day_ctx.get('menu_items', []),
+        'menu_items_grouped': day_ctx.get('menu_items_grouped', {}),
+        'menu_items_by_day_grouped': menu_items_by_day_grouped,
+        'week_items_count': week_items_count,
+        'month_items_count': month_items_count,
+        'week_start': week_ctx.get('week_start'),
+        'week_end': week_ctx.get('week_end'),
+        'my_orders': my_orders,
+        'filter': filter_type,
+        'selected_date': selected_date,
+        'date_str': selected_date.strftime('%Y-%m-%d'),
+        'my_order_items': my_order_items,
+        'today': today,
+    }
+
+    context.update({
+        'canteen_contact': CanteenContact.objects.first(),
+        'meal_pickup_times': MealPickupTime.objects.all(),
+        'provozni_dny': OperatingDays.objects.filter(is_operating=True),
+        'exceptions': OperatingExceptions.objects.filter(
+            date__gte=timezone.now().date()
+        ).order_by('date')[:3]
+    })
+
+
+    return render(request, 'dashboard.html', context)
+
+
+
+def get_dashboard_url(request):
+    """Vytvoří URL na dashboard s parametry"""
+    params = {}
+    for param in ['filter', 'date', 'month', 'year']:
+        value = request.POST.get(param)
+        if value: params[param] = value
+    scroll_pos = request.POST.get('scroll_position')
+    if scroll_pos: params['scroll'] = scroll_pos
+    query_string = urlencode(params) if params else ''
+    return f"/jidelnicek/dashboard/?{query_string}" if query_string else "/jidelnicek/dashboard/"
+
+
+# ... (zbytek views.py zůstává stejný až do order_create_view)
+
+@login_required
+@require_POST
+def order_create_view(request):
+    """✅ OKAMŽITÁ OBJEDNÁVKA - S KONTROLOU GROUP LIMITU"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST only'}, status=405)
+
+    menu_item_id = request.POST.get('menu_item_id') or request.POST.get('menuitemid')
+    menu_date_str = request.POST.get('menudate') or request.POST.get('menu_date')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        menu_item = PolozkaJidelnicku.objects.select_related('jidlo', 'druh_jidla').get(id=menu_item_id)
+        target_date = datetime.strptime(menu_date_str, '%Y-%m-%d').date()
+        item_name = get_item_name(menu_item)
+
+        # 1. Validace časová
+        can_order_time, time_msg = can_order_for_date(request.user, target_date)
+        if not can_order_time:
+            return JsonResponse({'status': 'error', 'message': 'Objednávky zavřené'})
+
+        # 2. ✅ KONTROLA GROUP LIMITU
+        can_order_group, group_msg = check_group_limit(request.user, menu_item, target_date, quantity)
+        if not can_order_group:
+            print(f"🚫 GROUP LIMIT: {group_msg}")
+            return JsonResponse({'status': 'error', 'message': group_msg})
+
+        price_per_item = get_user_price_for_item(request.user, menu_item)
+        total_price = price_per_item * quantity
+
+        # 3. Limit celkem na den
+        existing_qty = OrderItem.objects.filter(
+            order__user=request.user,
+            order__datum_vydeje=target_date
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+
+        if existing_qty + quantity > 10:
+            return JsonResponse({'status': 'error', 'message': 'Max 10 kusů celkem za den!'})
+
+        # 4. Kontrola zůstatku / debetu
+        balance_settings = get_user_balance_settings(request.user)
+        current_balance = get_user_balance(request.user)
+        new_balance = current_balance - total_price
+
+        if balance_settings['nutnost_dobit'] and new_balance < 0:
+            return JsonResponse({'status': 'error', 'message': 'Nedostatek zůstatku'})
+
+        if balance_settings['cerpani_debit']:
+            debit_limit = Decimal(str(balance_settings['debit_limit']))
+            if new_balance < -abs(debit_limit):
+                return JsonResponse({'status': 'error', 'message': f'Překročen debet'})
+
+        # 5. Vytvoř objednávku
+        with transaction.atomic():
+            order, _ = Order.objects.select_for_update().get_or_create(
+                user=request.user,
+                datum_vydeje=target_date
+            )
+
+            order_item, created = OrderItem.objects.get_or_create(
+                order=order,
+                menu_item_id=menu_item_id,
+                defaults={'quantity': quantity, 'cena': price_per_item}
+            )
+
+            if not created:
+                order_item.quantity += quantity
+            order_item.cena = price_per_item
+            order_item.save()
+
+            update_user_balance(request.user, -total_price)
+
+        # 6. Refresh
+        request.user.refresh_from_db()
+        menu_item.refresh_from_db()
+        
+        # ✅ Validuj pro hide_quantity
+        validate_item_for_display(request.user, menu_item, target_date)
+
+        order_item_final = OrderItem.objects.filter(
+            order__user=request.user,
+            order__datum_vydeje=target_date,
+            menu_item=menu_item
+        ).first()
+
+        context = {
+            'item': menu_item,
+            'date': target_date,
+            'current_order_item_id': order_item_final.id if order_item_final else None,
+            'current_quantity': order_item_final.quantity if order_item_final else 0,
+        }
+
+        item_html = render_to_string('jidelnicek_item.html', context, request=request)
+        my_orders_html = render_to_string('includes/_my_orders.html', {
+            'my_order_items': get_user_order_items(request.user)
+        }, request=request)
+        account_html = render_to_string('includes/_account_status.html', {
+            'user': request.user
+        }, request=request)
+
+        # ✅ AJAX response s kompletními daty pro aktualizaci všech panelů
+        final_balance = get_user_balance(request.user)
+        balance_class = '' if final_balance >= 0 else ''
+
+        return JsonResponse({
+            'status': 'success',
+            'message': f'✅ Přidáno {quantity}x {item_name}',
+            'item_html': item_html,
+            'my_orders_html': my_orders_html,
+            
+            'navbar_balance': f"{final_balance:.0f} Kč",
+            'navbar_balance_class': balance_class,
+            'menu_item_id': menu_item_id,
+            'balance': float(final_balance),
+        })
+
+    except Exception as e:
+        print(f"💥 order_create: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': 'Chyba objednávky'})
+
+@login_required
+@require_POST
+def order_delete_view(request):
+    """✅ OKAMŽITÉ ZRUŠENÍ - pouze pro aktivní objednávky před uzávěrkou"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'POST only'}, status=405)
+
+    order_item_id = request.POST.get('order_item_id') or request.POST.get('orderitemid')
+    quantity_to_remove = int(request.POST.get('quantity', 1))
+
+    try:
+        order_item_id_int = int(order_item_id)
+    except (TypeError, ValueError):
+        return JsonResponse({'status': 'error', 'message': 'Neplatné ID'})
+
+    try:
+        with transaction.atomic():
+            order_item = (
+                OrderItem.objects
+                .select_for_update()
+                .filter(id=order_item_id_int, order__user=request.user)
+                .select_related('order', 'menu_item__jidlo', 'menu_item__druh_jidla')
+                .first()
+            )
+
+            if not order_item:
+                return JsonResponse({'status': 'error', 'message': 'Objednávka nenalezena'})
+
+            # ✅ KONTROLA STATUSU OBJEDNÁVKY
+            if order_item.order.status not in ['zalozena-obsluhou', 'objednano']:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Tuto objednávku nelze zrušit (již byla vydána nebo zrušena)'
+                })
+
+            # ✅ KONTROLA ČASU UZAVŘENÍ
+            target_date = order_item.order.datum_vydeje
+            closing_time = get_effective_closing_time(target_date)
+            can_cancel_time = timezone.now() <= closing_time
+            
+            if not can_cancel_time:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Objednávky na {target_date.strftime("%d.%m.%Y")} jsou již uzavřeny'
+                })
+
+            menu_item = order_item.menu_item
+            return_price = order_item.cena * quantity_to_remove
+
+            if order_item.quantity <= quantity_to_remove:
+                order_item.delete()
+            else:
+                order_item.quantity -= quantity_to_remove
+                order_item.save()
+
+            update_user_balance(request.user, return_price)
+
+        request.user.refresh_from_db()
+        menu_item.refresh_from_db()
+        
+        # ✅ Validuj pro hide_quantity
+        validate_item_for_display(request.user, menu_item, target_date)
+
+        order_item_final = OrderItem.objects.filter(
+            order__user=request.user,
+            order__datum_vydeje=target_date,
+            menu_item=menu_item
+        ).first()
+
+        context = {
+            'item': menu_item,
+            'date': target_date,
+            'current_order_item_id': order_item_final.id if order_item_final else None,
+            'current_quantity': order_item_final.quantity if order_item_final else 0,
+        }
+
+        item_html = render_to_string('jidelnicek_item.html', context, request=request)
+        my_orders_html = render_to_string('includes/_my_orders.html', {
+            'my_order_items': get_user_order_items(request.user)
+        }, request=request)
+        account_html = render_to_string('includes/_account_status.html', {
+            'user': request.user
+        }, request=request)
+
+        # ✅ AJAX response s kompletními daty
+        final_balance = get_user_balance(request.user)
+        balance_class = '' if final_balance >= 0 else ''
+
+        return JsonResponse({
+            'status': 'success',
+            'message': '🗑️ Objednávka zrušena!',
+            'item_html': item_html,
+            'my_orders_html': my_orders_html,
+            
+            'navbar_balance': f"{final_balance:.0f} Kč",
+            'navbar_balance_class': balance_class,
+            'menu_item_id': menu_item.id,
+            'balance': float(final_balance),
+        })
+
+    except Exception as e:
+        print(f"💥 order_delete: {e}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': 'Chyba rušení'})
+
+@login_required
+def account_status_api(request):
+    """AJAX: Kompletní stav konta + debetní limit"""
+    balance_settings = get_user_balance_settings(request.user)
+    current_balance = get_user_balance(request.user)
+    
+    context = {
+        'user': request.user,
+        'balance': current_balance,
+        'balance_settings': balance_settings,
+    }
+    
+    account_html = render_to_string('includes/_account_status.html', context, request=request)
+    navbar_html = render_to_string('includes/_navbar_balance.html', context, request=request)
+    
+    balance_class = '' if current_balance >= 0 else ''
+    
+    return JsonResponse({
+        'account_html': account_html,
+        'navbar_html': navbar_html,
+        'navbar_balance': f"{current_balance:.0f} Kč",
+        'navbar_balance_class': balance_class,
+        'status': 'ok'
+    })
+
+# ... (zbytek views.py zůstává stejný)
+
+
+
+@login_required
+def user_balance_api(request):
+    """AJAX: Aktuální zůstatek"""
+    balance = get_user_balance(request.user)
+    return JsonResponse({
+        'balance': float(balance),
+        'formatted': f"{balance:.0f} Kč",
+        'status': 'ok'
+    })

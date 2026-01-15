@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Účtenka - {{ order.datum_vydeje|date:"d.m.Y" }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .receipt {
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #54ae43;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #54ae43;
+            margin: 0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th {
+            background: #54ae43;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .total-row {
+            background: #f0f0f0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .print-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .print-btn button {
+            background: #54ae43;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .print-btn button:hover {
+            background: #449a35;
+        }
+
+                .btn-download {
+            display: inline-block;
+            background: #f28f28;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .btn-download:hover {
+            background: #d97a1f;
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            body { background: white; margin: 0; }
+            .receipt { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <h1>🍽️ Výdejní účtenka</h1>
+            <p>Školní jídelna</p>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-row">
+                <strong>Uživatel:</strong>
+                <span>{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Osobní číslo:</strong>
+                <span>{{ user.osobni_cislo }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Datum výdeje:</strong>
+                <span>{{ order.datum_vydeje|date:"d.m.Y" }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Datum objednání:</strong>
+                <span>{{ order.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Status:</strong>
+                <span>
+                    {% if order.status == 'vydano' %}
+                        Vydáno
+                    {% elif order.status == 'nevyzvednuto' %}
+                        Nevyzvednuto
+                    {% else %}
+                        {{ order.get_status_display }}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Druh jídla</th>
+                    <th>Název</th>
+                    <th style="text-align: center;">Počet</th>
+                    <th style="text-align: right;">Cena/ks</th>
+                    <th style="text-align: right;">Celkem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item_data in order_items_with_totals %}
+                <tr>
+                    <td>{{ item_data.item.menu_item.druh_jidla.nazev }}</td>
+                    <td>{{ item_data.item.menu_item.jidlo.nazev }}</td>
+                    <td style="text-align: center;">{{ item_data.item.quantity }}</td>
+                    <td style="text-align: right;">{{ item_data.item.cena|floatformat:2 }} Kč</td>
+                    <td style="text-align: right;">{{ item_data.total|floatformat:2 }} Kč</td>
+                </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td colspan="4" style="text-align: right;">CELKEM:</td>
+                    <td style="text-align: right;">{{ total|floatformat:2 }} Kč</td>
+                </tr>
+            </tbody>
+        </table>
+        
+                <div class="print-btn">
+            <button onclick="window.print()">
+                🖨️ Vytisknout účtenku
+            </button>
+            <a href="{% url 'users:receipt-pdf-download' order.id %}" class="btn-download">
+                📄 Stáhnout jako PDF
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>

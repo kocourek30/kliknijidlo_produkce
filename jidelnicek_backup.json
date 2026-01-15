@@ -1,0 +1,588 @@
+﻿[
+{
+  "model": "jidelnicek.alergen",
+  "pk": 1,
+  "fields": {
+    "nazev": "1 - Lepek",
+    "ikona": "fas fa-exclamation-triangle"
+  }
+},
+{
+  "model": "jidelnicek.alergen",
+  "pk": 2,
+  "fields": {
+    "nazev": "2 - KorřÜi",
+    "ikona": "fas fa-exclamation-triangle"
+  }
+},
+{
+  "model": "jidelnicek.druhjidla",
+  "pk": 1,
+  "fields": {
+    "nazev": "HlavnÝ jÝdlo",
+    "ikona": "fas fa-utensils"
+  }
+},
+{
+  "model": "jidelnicek.druhjidla",
+  "pk": 2,
+  "fields": {
+    "nazev": "PolÚvka",
+    "ikona": "fas fa-spoon"
+  }
+},
+{
+  "model": "jidelnicek.druhjidla",
+  "pk": 3,
+  "fields": {
+    "nazev": "SnÝdaný",
+    "ikona": "fas fa-egg"
+  }
+},
+{
+  "model": "jidelnicek.druhjidla",
+  "pk": 4,
+  "fields": {
+    "nazev": "Dezert / Ovoce",
+    "ikona": "fa-solid fa-ice-cream"
+  }
+},
+{
+  "model": "jidelnicek.druhjidla",
+  "pk": 5,
+  "fields": {
+    "nazev": "VeŔe°e",
+    "ikona": "fas fa-basketball-ball"
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 1,
+  "fields": {
+    "nazev": "SvÝŔkovß na smetaný s houskovřm knedlÝkem",
+    "cena": "100.00",
+    "ikona": "",
+    "druh": 1,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": [
+      2
+    ]
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 2,
+  "fields": {
+    "nazev": "╚oŔkovß polÚvka",
+    "cena": "100.00",
+    "ikona": "",
+    "druh": 2,
+    "kcal": "10.00",
+    "bÝlkoviny": "5.00",
+    "tuky": "5.00",
+    "sacharidy": "5.00",
+    "alergeny": [
+      1
+    ]
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 3,
+  "fields": {
+    "nazev": "KanŔÝ gulßÜ",
+    "cena": "195.00",
+    "ikona": "",
+    "druh": 1,
+    "kcal": "100.00",
+    "bÝlkoviny": "500.00",
+    "tuky": "55.00",
+    "sacharidy": "23.00",
+    "alergeny": []
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 4,
+  "fields": {
+    "nazev": "╚okolßdovř muffin",
+    "cena": "55.00",
+    "ikona": "fa-solid fa-ice-cream",
+    "druh": 4,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": []
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 5,
+  "fields": {
+    "nazev": "ŔevabŔiŔi, brambor",
+    "cena": "95.00",
+    "ikona": "",
+    "druh": 1,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": []
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 6,
+  "fields": {
+    "nazev": "Koprovß omßŔka",
+    "cena": "55.00",
+    "ikona": "",
+    "druh": 1,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": []
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 7,
+  "fields": {
+    "nazev": "Nudlovß polÚvka",
+    "cena": "15.00",
+    "ikona": "",
+    "druh": 2,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": []
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 8,
+  "fields": {
+    "nazev": "Bßbovka",
+    "cena": "25.00",
+    "ikona": "",
+    "druh": 4,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": [
+      1
+    ]
+  }
+},
+{
+  "model": "jidelnicek.jidlo",
+  "pk": 9,
+  "fields": {
+    "nazev": "Kat¨v Üleh",
+    "cena": "125.00",
+    "ikona": "",
+    "druh": 1,
+    "kcal": null,
+    "bÝlkoviny": null,
+    "tuky": null,
+    "sacharidy": null,
+    "alergeny": [
+      2
+    ]
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 22,
+  "fields": {
+    "platnost_od": "2026-01-03",
+    "platnost_do": "2026-01-03",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 23,
+  "fields": {
+    "platnost_od": "2026-01-05",
+    "platnost_do": "2026-01-05",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 24,
+  "fields": {
+    "platnost_od": "2026-01-06",
+    "platnost_do": "2026-01-06",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 25,
+  "fields": {
+    "platnost_od": "2026-01-07",
+    "platnost_do": "2026-01-07",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 26,
+  "fields": {
+    "platnost_od": "2026-01-09",
+    "platnost_do": "2026-01-09",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 27,
+  "fields": {
+    "platnost_od": "2026-01-08",
+    "platnost_do": "2026-01-08",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 28,
+  "fields": {
+    "platnost_od": "2026-01-12",
+    "platnost_do": "2026-01-12",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 29,
+  "fields": {
+    "platnost_od": "2026-01-13",
+    "platnost_do": "2026-01-13",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 30,
+  "fields": {
+    "platnost_od": "2026-01-19",
+    "platnost_do": "2026-01-19",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 31,
+  "fields": {
+    "platnost_od": "2026-01-20",
+    "platnost_do": "2026-01-20",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 33,
+  "fields": {
+    "platnost_od": "2026-01-10",
+    "platnost_do": "2026-01-10",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.jidelnicek",
+  "pk": 34,
+  "fields": {
+    "platnost_od": "2026-01-11",
+    "platnost_do": "2026-01-11",
+    "ikona": ""
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 39,
+  "fields": {
+    "jidelnicek": 22,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 40,
+  "fields": {
+    "jidelnicek": 22,
+    "druh_jidla": 1,
+    "jidlo": 3
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 41,
+  "fields": {
+    "jidelnicek": 22,
+    "druh_jidla": 4,
+    "jidlo": 4
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 42,
+  "fields": {
+    "jidelnicek": 23,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 43,
+  "fields": {
+    "jidelnicek": 23,
+    "druh_jidla": 1,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 44,
+  "fields": {
+    "jidelnicek": 23,
+    "druh_jidla": 4,
+    "jidlo": 4
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 45,
+  "fields": {
+    "jidelnicek": 24,
+    "druh_jidla": 2,
+    "jidlo": 7
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 46,
+  "fields": {
+    "jidelnicek": 24,
+    "druh_jidla": 1,
+    "jidlo": 6
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 47,
+  "fields": {
+    "jidelnicek": 25,
+    "druh_jidla": 2,
+    "jidlo": 7
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 48,
+  "fields": {
+    "jidelnicek": 25,
+    "druh_jidla": 1,
+    "jidlo": 9
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 49,
+  "fields": {
+    "jidelnicek": 26,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 50,
+  "fields": {
+    "jidelnicek": 26,
+    "druh_jidla": 1,
+    "jidlo": 3
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 51,
+  "fields": {
+    "jidelnicek": 27,
+    "druh_jidla": 2,
+    "jidlo": 7
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 52,
+  "fields": {
+    "jidelnicek": 27,
+    "druh_jidla": 1,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 53,
+  "fields": {
+    "jidelnicek": 28,
+    "druh_jidla": 1,
+    "jidlo": 6
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 54,
+  "fields": {
+    "jidelnicek": 28,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 55,
+  "fields": {
+    "jidelnicek": 29,
+    "druh_jidla": 5,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 56,
+  "fields": {
+    "jidelnicek": 30,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 60,
+  "fields": {
+    "jidelnicek": 31,
+    "druh_jidla": 1,
+    "jidlo": 3
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 61,
+  "fields": {
+    "jidelnicek": 33,
+    "druh_jidla": 1,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 62,
+  "fields": {
+    "jidelnicek": 33,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 63,
+  "fields": {
+    "jidelnicek": 33,
+    "druh_jidla": 3,
+    "jidlo": 8
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 64,
+  "fields": {
+    "jidelnicek": 33,
+    "druh_jidla": 4,
+    "jidlo": 4
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 65,
+  "fields": {
+    "jidelnicek": 34,
+    "druh_jidla": 1,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 66,
+  "fields": {
+    "jidelnicek": 34,
+    "druh_jidla": 5,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 67,
+  "fields": {
+    "jidelnicek": 34,
+    "druh_jidla": 2,
+    "jidlo": 2
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 68,
+  "fields": {
+    "jidelnicek": 34,
+    "druh_jidla": 4,
+    "jidlo": 4
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 69,
+  "fields": {
+    "jidelnicek": 34,
+    "druh_jidla": 3,
+    "jidlo": 8
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 70,
+  "fields": {
+    "jidelnicek": 30,
+    "druh_jidla": 2,
+    "jidlo": 7
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 71,
+  "fields": {
+    "jidelnicek": 30,
+    "druh_jidla": 1,
+    "jidlo": 1
+  }
+},
+{
+  "model": "jidelnicek.polozkajidelnicku",
+  "pk": 72,
+  "fields": {
+    "jidelnicek": 30,
+    "druh_jidla": 1,
+    "jidlo": 3
+  }
+}
+]

@@ -1,0 +1,9 @@
+<span id="navbar-balance-container">
+  {% if user_balance is not None %}
+    <span class="{% if user_balance >= 0 %}{% else %}{% endif %}">
+      {{ user_balance }} Kč
+    </span>
+  {% else %}
+    <span class="text-muted">-- Kč</span>
+  {% endif %}
+</span>

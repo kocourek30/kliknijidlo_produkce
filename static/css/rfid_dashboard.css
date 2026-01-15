@@ -1,0 +1,959 @@
+        /* Základní styly pro order items */
+        .order-items-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .order-item {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-quantity {
+            font-weight: 700;
+            color: #2196F3;
+            min-width: 35px;
+            display: inline-block;
+        }
+
+        .item-name {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .item-type {
+            color: #666;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .order-items-list.completed .order-item {
+            border-bottom-color: #e8f5e9;
+        }
+
+        .order-items-list.completed .item-quantity {
+            color: #4CAF50;
+        }
+
+        .order-items-list.completed .item-name {
+            color: #2e7d32;
+        }
+
+        .order-items-list.completed .item-type {
+            color: #66bb6a;
+        }
+
+        .recent-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .recent-order-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .recent-order-list li {
+            padding: 0.2rem 0;
+            color: #555;
+        }
+
+        .recent-order-list .item-qty {
+            font-weight: 600;
+            color: #4CAF50;
+            margin-right: 0.3rem;
+        }
+
+        .customer-items-list {
+            margin-top: 0.75rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-issue-order {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* 🔥 RFID TAB - WAITING STATE */
+        .rfid-waiting-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            padding: 2rem;
+        }
+
+        .rfid-card-icon {
+            font-size: 5rem;
+            color: #2196F3;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .rfid-waiting-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .rfid-waiting-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .rfid-status-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .rfid-port-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.75rem;
+        }
+
+        .rfid-port-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* 🔥 RFID TAB - SUCCESS STATE (Objednávka načtena) */
+        .rfid-success-container {
+            animation: slideIn 0.4s ease;
+            padding: 1.5rem;
+        }
+
+        .rfid-order-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            margin-bottom: 1.5rem;
+        }
+
+        .rfid-user-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .rfid-user-info {
+            flex: 1;
+        }
+
+        .rfid-user-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rfid-user-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .rfid-order-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .rfid-order-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rfid-items-section {
+            margin: 1.5rem 0;
+        }
+
+        .rfid-items-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rfid-order-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .rfid-order-item {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #2196F3;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .rfid-order-item:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left-color: #1976D2;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+        }
+
+        .rfid-item-qty {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2196F3;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .rfid-item-details {
+            flex: 1;
+            padding-left: 1rem;
+        }
+
+        .rfid-item-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .rfid-item-type {
+            font-size: 0.9rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        .rfid-action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 3px solid #e0e0e0;
+        }
+
+        .btn-rfid-issue {
+            flex: 2;
+            padding: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-rfid-issue:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-rfid-cancel {
+            flex: 1;
+            padding: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .btn-rfid-cancel:hover {
+            background: #e0e0e0;
+            border-color: #bbb;
+            color: #333;
+        }
+
+        /* 🔥 RFID TAB - ERROR STATE */
+        .rfid-error-container {
+            animation: slideIn 0.4s ease;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .rfid-error-icon {
+            font-size: 5rem;
+            color: #f44336;
+            margin-bottom: 1.5rem;
+        }
+
+        .rfid-error-card {
+            background: #ffebee;
+            border: 2px solid #ef5350;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+        }
+
+        .rfid-error-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #c62828;
+            margin-bottom: 1rem;
+        }
+
+        .rfid-error-message {
+            font-size: 1.1rem;
+            color: #d32f2f;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .rfid-error-rfid {
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .btn-rfid-retry {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-rfid-retry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+        }
+
+        /* 🔥 LOADING STATE */
+        .rfid-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border-radius: 8px;
+        }
+
+        .rfid-loading-spinner {
+            font-size: 4rem;
+            color: #2196F3;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rfid-loading-text {
+            font-size: 1.25rem;
+            color: #666;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        /* 🎨 BAREVNÁ PALETA: Oranžová + Zelená */
+:root {
+    --primary-orange: #FF6B35;
+    --primary-green: #4CAF50;
+    --dark-green: #388E3C;
+    --light-orange: #FFA726;
+    --error-red: #f44336;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+}
+
+/* 🔥 WAITING STATE - Oranžová */
+.rfid-waiting-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+    padding: 2rem;
+}
+
+.rfid-card-icon {
+    font-size: 6rem;
+    color: var(--primary-orange);
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+.rfid-waiting-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+
+.rfid-waiting-subtitle {
+    font-size: 1.5rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.rfid-status-box {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--light-orange) 100%);
+    color: white;
+    padding: 1.5rem 2.5rem;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+    margin-bottom: 2rem;
+}
+
+.rfid-port-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    margin-top: 0.75rem;
+}
+
+.rfid-port-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary-green);
+    animation: pulse 1.5s infinite;
+}
+
+/* 🔥 SUCCESS STATE - Kompaktní a zelený */
+.rfid-success-container {
+    animation: slideIn 0.4s ease;
+    padding: 1rem;
+    max-height: calc(100vh - 200px);
+    overflow: hidden;
+}
+
+.rfid-order-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.rfid-user-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #e0e0e0;
+    margin-bottom: 1rem;
+}
+
+.rfid-user-info {
+    flex: 1;
+}
+
+.rfid-user-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.rfid-user-name i {
+    color: var(--primary-orange);
+    font-size: 2.5rem;
+}
+
+.rfid-order-meta {
+    display: flex;
+    gap: 2rem;
+    color: var(--text-light);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.rfid-order-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ✅ KLIKATELNÁ FAJFKA VPRAVO NAHOŘE */
+.rfid-issue-icon-btn {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 1.25rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    min-width: 140px;
+}
+
+.rfid-issue-icon-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+}
+
+.rfid-issue-icon-btn:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.rfid-issue-icon-btn i {
+    font-size: 3rem;
+}
+
+.rfid-issue-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* 📋 KOMPAKTNÍ SEZNAM POLOŽEK - BEZ SCROLLOVÁNÍ */
+.rfid-items-section-compact {
+    margin: 1rem 0;
+}
+
+.rfid-items-title-compact {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rfid-items-title-compact i {
+    color: var(--primary-orange);
+}
+
+.rfid-order-items-list-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.rfid-order-item-compact {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 5px solid var(--primary-orange);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.rfid-order-item-compact:hover {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-left-color: var(--light-orange);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+}
+
+.rfid-item-qty-compact {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-orange);
+    min-width: 50px;
+    text-align: center;
+}
+
+.rfid-item-details-compact {
+    flex: 1;
+    padding-left: 1rem;
+}
+
+.rfid-item-name-compact {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.2rem;
+}
+
+.rfid-item-type-compact {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* 🔘 TLAČÍTKO ZRUŠIT (menší) */
+.rfid-cancel-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e0e0e0;
+}
+
+.btn-rfid-cancel-small {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    background: #f5f5f5;
+    border: 2px solid #ddd;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.btn-rfid-cancel-small:hover {
+    background: #e0e0e0;
+    border-color: #bbb;
+    color: #333;
+}
+
+/* 🔥 ERROR STATE - CENTROVANÝ A VELKÝ */
+.rfid-error-container-centered {
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background: none; /* Odstraní pozadí */
+    border: none; /* Odstraní obrys */
+}
+
+.rfid-error-card-centered {
+    text-align: center;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 1rem;
+}
+
+.rfid-error-title-large {
+    color: #dc3545; /* Červená pro chybu */
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.rfid-error-icon-large {
+    font-size: 4rem;
+    color: #ffc107; /* Žlutá varování */
+    margin-bottom: 1rem;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.rfid-error-card-centered {
+    background: #ffebee;
+    border: 3px solid var(--error-red);
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(244, 67, 54, 0.3);
+}
+
+.rfid-error-title-large {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #c62828;
+    margin-bottom: 1.5rem;
+}
+
+.rfid-error-message-large {
+    font-size: 1.25rem;
+    color: #d32f2f;
+    margin-bottom: 2rem;
+    line-height: 1.8;
+    font-weight: 600;
+}
+
+.rfid-error-rfid-large {
+    background: white;
+    padding: 1.25rem 2rem;
+    border-radius: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 2rem;
+    display: inline-block;
+    font-weight: 700;
+}
+
+.btn-rfid-retry-large {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--light-orange) 100%);
+    color: white;
+    padding: 1.25rem 3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.btn-rfid-retry-large:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+}
+
+/* 🔥 LOADING OVERLAY */
+.rfid-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border-radius: 8px;
+}
+
+.rfid-loading-spinner {
+    font-size: 5rem;
+    color: var(--primary-orange);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.rfid-loading-text {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-top: 1.5rem;
+    font-weight: 700;
+}
+
+/* 🎬 ANIMACE */
+@keyframes slideIn {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+/* 📱 RESPONZIVITA */
+@media (max-width: 768px) {
+    .rfid-order-items-list-compact {
+        grid-template-columns: 1fr;
+    }
+    
+    .rfid-user-name {
+        font-size: 2rem;
+    }
+    
+    .rfid-issue-icon-btn {
+        min-width: 100px;
+        padding: 1rem 1.5rem;
+    }
+}
+/* 🔥 TLAČÍTKO PRO VYDÁNÍ JEDNOTLIVÉ POLOŽKY */
+.btn-issue-single-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-left: auto;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-issue-single-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.rfid-order-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rfid-item-details-compact {
+    flex: 1;
+}
+/* 🔥 ERROR STATE - POUZE STYL, DISPLAY ŘÍDÍ JS */
+#rfidErrorState .rfid-error-container-centered {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 50vh !important;
+    width: 100% !important;
+    gap: 2rem !important;
+    padding: 2rem !important;
+}
+
+#rfidErrorState .rfid-error-icon-large {
+    font-size: 6rem !important;
+    color: #ffc107 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+#rfidErrorState .rfid-error-card-centered {
+    text-align: center !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#rfidErrorState .rfid-error-title-large {
+    color: #dc3545 !important;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ZABRANĚNÍ SCROLLU V TABU */
+.tab-pane#rfid {
+    overflow: visible !important;
+    height: auto !important;
+}
+
+#shutdownBtn {
+    font-size: 0.85rem !important;
+    padding: 0.4rem !important;
+    border-radius: 6px !important;
+}

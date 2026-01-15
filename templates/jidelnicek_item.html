@@ -1,0 +1,480 @@
+<!-- jidelnicek_item.html - UNIVERZÁLNÍ pro DASHBOARD + AJAX -->
+<div class="card border-0 shadow-sm mb-2 menu-item-card">
+  <div class="card-body py-3 px-3">
+    <div class="menu-item-grid {% if item.hide_quantity %}grid-no-qty{% endif %}">
+      
+      <!-- 1. BLOK – TALÍŘOVÁ IKONA -->
+      <div class="mi-block mi-icon">
+        <div class="mi-plate">
+          <div class="mi-plate-outer">
+            <div class="mi-plate-inner">
+              <i class="{{ item.druh_jidla.ikona }} mi-plate-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. BLOK – INFO O JÍDLE (VLEVOLÉ ZAROVNÁNÍ) -->
+      <div class="mi-block mi-info">
+        <div class="mi-info-inner">
+          <div class="mi-info-top">
+            <span class="mi-type">{{ item.druh_jidla.nazev }}</span>
+            {% if item.order_status == "ordered" %}
+              <span class="badge mi-badge-ordered">Objednáno</span>
+            {% endif %}
+          </div>
+          <div class="mi-title">
+            {{ item.jidlo.nazev }}
+          </div>
+          <div class="mi-meta">
+            {% if item.jidlo.alergeny.count %}
+              <div class="mi-alergens">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> Alergeny:
+                {% comment %} Ikona alergenu je nyní odstraněna {% endcomment %}
+                {% for alergen in item.jidlo.alergeny.all %}
+                  <span class="">{{ alergen.nazev }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if item.jidlo.kcal or item.jidlo.bílkoviny or item.jidlo.tuky or item.jidlo.sacharidy %}
+              <div class="mi-nutrition">
+                <i class="fa-solid fa-scale-balanced me-1"></i>
+                <span>
+                  Kalorie: {{ item.jidlo.kcal|default:"-" }} kcal | 
+                  Bílkoviny: {{ item.jidlo.bílkoviny|default:"-" }} g |
+                  Tuky: {{ item.jidlo.tuky|default:"-" }} g |
+                  Sacharidy: {{ item.jidlo.sacharidy|default:"-" }} g
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. BLOK – CENA (VYSTŘEDĚNÁ) -->
+      <div class="mi-block mi-price">
+        <span class="mi-price-main">{{ item.display_price|floatformat:2 }} Kč</span>
+      </div>
+
+      <!-- 4+5. BLOK – MNOŽSTVÍ + AKCE (VYSTŘEDĚNÉ) -->
+      {% if item.order_status == "closed" %}
+        <div class="mi-block mi-action mi-block-full">
+          <button class="btn mi-btn-ghost mi-btn-fixed w-100" disabled>
+            <i class="fas fa-lock me-1"></i> Objednávky uzavřeny
+          </button>
+        </div>
+
+      {% elif item.order_status == "ordered" or current_order_item_id %}
+        <div class="mi-block mi-action mi-block-full">
+          {% if item.can_cancel %}
+            <form action="{% url 'jidelnicek:order_delete' %}" method="post"
+                  class="mb-0 ajax-order-form d-flex align-items-stretch justify-content-end w-100">
+              {% csrf_token %}
+              <input type="hidden" name="order_item_id" value="{{ current_order_item_id|default:item.current_order_item_id }}">
+              <input type="hidden" name="quantity" value="{% if item.hide_quantity %}{{ current_quantity|default:item.current_quantity|default:1 }}{% else %}{{ current_quantity|default:item.current_quantity }}{% endif %}">
+              <button type="submit" class="btn mi-btn-danger mi-btn-fixed flex-grow-1">
+                <i class="fas fa-trash me-1"></i> Zrušit{% if not item.hide_quantity and current_quantity|default:1 > 1 %} ({{ current_quantity|default:item.current_quantity }} ks){% endif %}
+              </button>
+            </form>
+          {% else %}
+            <button class="btn mi-btn-success mi-btn-fixed w-100" disabled>
+              <i class="fas fa-check-circle me-1"></i>
+              Objednáno{% if not item.hide_quantity %} {{ current_quantity|default:item.current_quantity|default:"1" }} ks{% endif %}
+            </button>
+          {% endif %}
+        </div>
+
+      {% else %}
+        <div class="mi-block mi-action mi-block-full">
+          {% if item.can_order %}
+            <form action="{% url 'jidelnicek:order_create' %}" method="post"
+                  class="mb-0 ajax-order-form d-flex align-items-stretch justify-content-end w-100">
+              {% csrf_token %}
+              <input type="hidden" name="menu_item_id" value="{{ item.id }}">
+              <input type="hidden" name="menu_date" value="{% if item.target_date %}{{ item.target_date|date:'Y-m-d' }}{% else %}{{ date|date:'Y-m-d' }}{% endif %}">
+              
+              {% if item.hide_quantity %}
+                <button type="submit" class="btn mi-btn-primary mi-btn-fixed w-100">
+                  <i class="fas fa-cart-shopping me-1"></i> Objednat
+                </button>
+              {% else %}
+                <div class="qty-action-group">
+                  <div class="mi-qty-compact">
+                    <button type="button" class="btn-qty-circle qty-minus" onclick="adjustQty(this, -1)" tabindex="-1" aria-label="Odečíst">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" name="quantity" min="1" max="{{ item.max_order_quantity|default:'10' }}" value="1"
+                           class="qty-input-compact" required>
+                    <button type="button" class="btn-qty-circle qty-plus" onclick="adjustQty(this, 1)" tabindex="-1" aria-label="Přičíst">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <button type="submit" class="btn mi-btn-primary mi-btn-fixed ms-2 flex-grow-1">
+                    <i class="fas fa-cart-shopping me-1"></i> Objednat
+                  </button>
+                </div>
+              {% endif %}
+            </form>
+          {% else %}
+            <button class="btn mi-btn-ghost mi-btn-fixed w-100" disabled>
+              <i class="fas fa-exclamation-triangle me-1"></i> 
+              {% if item.validation_error == 'group_limit' %}
+                Limit skupiny překročen
+              {% else %}
+                Nedostatečný zůstatek
+              {% endif %}
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+function adjustQty(btn, delta) {
+  const input = btn.closest('.mi-qty-compact').querySelector('input[type="number"]');
+  if (!input) return;
+  
+  const currentVal = parseInt(input.value) || 1;
+  const minVal = parseInt(input.min) || 1;
+  const maxVal = parseInt(input.max) || 10;
+  
+  let newVal = currentVal + delta;
+  if (newVal < minVal) newVal = minVal;
+  if (newVal > maxVal) newVal = maxVal;
+  
+  input.value = newVal;
+}
+</script>
+
+<style>
+:root {
+  --primary-color: #54ae43;
+  --accent-color: #f28c28;
+}
+
+/* KARTA */
+.menu-item-card {
+  border-radius: 18px !important;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06) !important;
+  
+}
+
+/* GRID */
+.menu-item-grid {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 2fr) 120px 1fr;
+  gap: 16px;
+  align-items: center;
+  min-height: 76px;
+}
+
+
+.menu-item-grid.grid-no-qty .mi-block-full {
+  grid-column: -2 / -1;
+}
+
+/* ZÁKLAD BLOKŮ */
+.mi-block {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.mi-block-full {
+  grid-column: 4 / -1;
+  justify-content: center;
+}
+
+/* 1) TALÍŘ - VYSTŘEDĚNÝ */
+.mi-icon {
+  justify-content: center;
+}
+
+.mi-plate {
+  width: 54px;
+  height: 54px;
+}
+
+.mi-plate-outer {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #e9ecef);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mi-plate-inner {
+  width: 76%;
+  height: 76%;
+  border-radius: 50%;
+  border: 2px solid #e0e7ff;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mi-plate-icon {
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+/* 2) INFO - VLEVOLÉ ZAROVNÁNÍ */
+.mi-info {
+  justify-content: flex-start;
+}
+
+.mi-info-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
+.mi-info-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.mi-type {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.mi-badge-ordered {
+  background: #e6f4ea;
+  color: #166534;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+}
+
+.mi-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.mi-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.mi-alergens {
+  margin-bottom: 2px;
+}
+
+.mi-alergens i {
+  font-size: 0.85rem;
+  color: #000000;
+}
+
+.mi-badge-alergen {
+  background: #ffffff;
+  color: #464545;
+  border: 1px solid #696969;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-right: 4px;
+  margin-bottom: 1px;
+  display: inline-block;
+}
+
+.mi-nutrition {
+  font-size: 0.85rem;
+}
+
+.mi-nutrition i {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+}
+
+/* 3) CENA - VYSTŘEDĚNÁ */
+.mi-price {
+  justify-content: center;
+}
+
+.mi-price-main {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* KOMPAKTNÍ MNOŽSTVÍ - BEZ PODBARVENÍ */
+.qty-action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.mi-qty-compact {
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  gap: 4px;
+}
+
+.btn-qty-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  border: 2px solid var(--primary-color) !important;
+  background: transparent !important;
+  color: var(--primary-color) !important;
+  font-size: 0.85rem;
+  padding: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-qty-circle:hover:not(:disabled) {
+  background: var(--primary-color) !important;
+  color: white !important;
+  transform: scale(1.05);
+}
+
+.btn-qty-circle:active {
+  transform: scale(0.95);
+}
+
+.qty-input-compact {
+  width: 40px;
+  height: 32px;
+  border: none !important;
+  background: transparent !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  padding: 0;
+}
+
+.qty-input-compact:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* TLAČÍTKO */
+.mi-btn-fixed {
+  height: 38px !important;
+  line-height: 1.2 !important;
+  padding: 0 18px !important;
+  font-size: 0.92rem !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+/* BARVY TLAČÍTEK */
+.mi-btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), #3f8e34) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(84,174,67,0.4);
+}
+
+.mi-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3f8e34, #2f6f28) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(84,174,67,0.5);
+}
+
+.mi-btn-danger {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.mi-btn-danger:hover:not(:disabled) {
+  background: #fca5a5;
+  color: #7f1d1d;
+}
+
+.mi-btn-ghost {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+.mi-btn-success {
+  background: #e6f4ea;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+/* Vypnutí spinnerů */
+.qty-input-compact::-webkit-outer-spin-button,
+.qty-input-compact::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty-input-compact {
+  -moz-appearance: textfield;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .menu-item-grid {
+    grid-template-columns: 52px 1fr;
+    grid-template-rows: auto auto;
+    row-gap: 12px;
+    gap: 12px;
+  }
+  
+  .mi-icon { grid-row: 1; grid-column: 1; }
+  .mi-info { 
+    grid-row: 1; 
+    grid-column: 2; 
+    justify-content: flex-start; 
+  }
+  .mi-price { 
+    grid-row: 2; 
+    grid-column: 1 / -1; 
+    justify-content: center; 
+  }
+  .mi-block-full { 
+    grid-row: 3; 
+    grid-column: 1 / -1; 
+    justify-content: center;
+  }
+  
+  .qty-action-group {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .mi-qty-compact {
+    justify-content: center;
+    min-width: auto;
+  }
+  
+  .mi-btn-fixed {
+    width: 100%;
+  }
+}
+</style>
