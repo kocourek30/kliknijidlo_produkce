@@ -637,10 +637,10 @@ function connectRFIDBridge() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Připojuji...';
     }
     
-    console.log('🔌 Připojuji k RFID Bridge na localhost:3001...');
+    console.log('🔌 Připojuji k RFID Bridge na jidelna.kliknijidlo.cz...');
     
     try {
-        socket = io('http://localhost:3001', {
+        socket = io('https://jidelna.kliknijidlo.cz:3001', {
             transports: ['websocket', 'polling'],
             timeout: 2000,  // ⚡ ZKRÁCENO z 10000 na 2000ms
             reconnection: true,
