@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.urls import include, path
+from kliknijidlo import settings
 from users import views
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,8 +13,13 @@ urlpatterns = [
     path('jidelnicek/', include('jidelnicek.urls')), 
     path('users/', include('users.urls', namespace='users')),
     path('vydej/', include('vydej_frontend.urls')),  
+    path('accounts/profile/', RedirectView.as_view(url='/jidelnicek/dashboard/', permanent=False)),
     
     
-    
-]
+] 
 
+
+# Servírování static v DEBUG módu
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

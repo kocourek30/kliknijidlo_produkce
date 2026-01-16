@@ -16,7 +16,12 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     musl-dev \
     libpq-dev \
+    build-essential \
+    libcairo2-dev \
+    pkg-config \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Kopírování requirements a instalace Python balíčků
 COPY requirements.txt .
