@@ -153,112 +153,121 @@ def dashboard(request):
     return render(request, 'vydej_frontend/dashboard.html', context)
 
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect
+from django.utils import timezone
+from decimal import Decimal
+
 @login_required
 @obsluha_required
+@csrf_protect
 @require_POST
 def issue_order(request, order_id):
-    """AJAX endpoint pro vydání AKTUÁLNÍCH položek objednávky"""
+    """AJAX endpoint pro vydání AKTUÁLNÍCH položek objednávky.
+    Vždy vrací JSON payload (success / error).
+    """
     try:
         order = Order.objects.select_related('user').prefetch_related(
             'items__menu_item__jidlo',
             'items__menu_item__druh_jidla'
         ).get(id=order_id)
-        
+
         if order.status not in ['objednano', 'zalozena-obsluhou', 'castecne-vydano']:
             return JsonResponse({
                 'success': False,
                 'error': 'Objednávka nemůže být vydána (nesprávný stav)'
             }, status=400)
-        
+
         now = timezone.localtime(timezone.now()).time()
         current_meal_type_ids = list(MealPickupTime.objects.filter(
             pickup_from__lte=now,
             pickup_to__gte=now
         ).values_list('druh_jidla_id', flat=True))
-        
+
         if not current_meal_type_ids:
             return JsonResponse({
                 'success': False,
                 'error': 'Nyní není žádný výdejní čas'
             }, status=400)
-        
+
         items_to_issue = order.items.filter(
             vydano=False,
             menu_item__druh_jidla_id__in=current_meal_type_ids
         )
-        
+
         if not items_to_issue.exists():
             return JsonResponse({
                 'success': False,
                 'error': 'Žádné položky k vydání v aktuálním čase'
             }, status=400)
-        
+
         uctenka, created = VydejniUctenka.objects.get_or_create(
             order=order,
             defaults={
                 'datum_vydeje': timezone.now(),
                 'vydal': request.user,
                 'celkova_cena': Decimal('0'),
-                'celkova_dotace': Decimal('0')
-            }
+                'celkova_dotace': Decimal('0'),
+            },
         )
-        
+
         vydane_polozky = []
         for item in items_to_issue:
             cena_za_kus = item.cena
             puvodni_cena = item.menu_item.jidlo.cena
             dotace_za_kus = puvodni_cena - cena_za_kus
-            
+
             PolozkaUctenky.objects.create(
                 uctenka=uctenka,
                 nazev_jidla=item.menu_item.jidlo.nazev,
                 druh_jidla=item.menu_item.druh_jidla.nazev,
                 mnozstvi=item.quantity,
                 cena_za_kus=cena_za_kus,
-                dotace_za_kus=dotace_za_kus
+                dotace_za_kus=dotace_za_kus,
             )
-            
+
             uctenka.celkova_cena += cena_za_kus * item.quantity
             uctenka.celkova_dotace += dotace_za_kus * item.quantity
-            
+
             item.vydano = True
             item.datum_vydani = timezone.now()
             item.save()
-            
+
             vydane_polozky.append(f"{item.quantity}× {item.menu_item.jidlo.nazev}")
-        
+
         uctenka.save()
-        
+
         if order.items.filter(vydano=False).exists():
             order.status = 'castecne-vydano'
         else:
             order.status = 'vydano'
-        
+
         order.datum_vydani = timezone.now()
         order.save()
-        
+
         return JsonResponse({
             'success': True,
             'message': f'Vydáno pro {order.user.get_full_name()}: {", ".join(vydane_polozky)}',
             'uctenka_id': uctenka.id,
-            'partial': order.status == 'castecne-vydano'
+            'partial': order.status == 'castecne-vydano',
         })
-        
+
     except Order.DoesNotExist:
         return JsonResponse({
             'success': False,
-            'error': 'Objednávka nenalezena'
+            'error': 'Objednávka nenalezena',
         }, status=404)
+
     except Exception as e:
         import logging
         logger = logging.getLogger(__name__)
         logger.error(f'Chyba při vydávání objednávky {order_id}: {str(e)}', exc_info=True)
-        
+
         return JsonResponse({
             'success': False,
-            'error': f'Chyba při vytváření účtenky: {str(e)}'
+            'error': f'Chyba při vytváření účtenky: {str(e)}',
         }, status=500)
-
 
 @login_required
 @obsluha_required

@@ -19,6 +19,7 @@ services:
   web:
     build: .
     container_name: kliknijidlo_web
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     environment:
@@ -37,7 +38,7 @@ services:
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media
       
-      
+      - .:/app
       - ./static:/app/static
 
 volumes:

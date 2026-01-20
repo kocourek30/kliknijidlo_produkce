@@ -30,6 +30,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = [
     'https://jidelna.kliknijidlo.cz',
     'http://jidelna.kliknijidlo.cz',
+    'http://10.0.0.108:8000',
 ]
 
 # Aby vás Django neodhlásilo při přechodu mezi Cloudflare a NASem:
@@ -46,9 +47,9 @@ else:
     SECURE_SSL_REDIRECT = False
 
 # --- SESSION SETTINGS ---
-SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_SAVE_EVERY_REQUEST = True 
 SESSION_COOKIE_AGE = 86400  # 24 hodin

@@ -579,19 +579,17 @@ function updateRecentOrders(html) {
 // UTILITY FUNKCE
 // ============================================
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+    const value = document.cookie
+        .split(';')
+        .map(c => c.trim())
+        .find(c => c.startsWith(name + '='));
+    if (!value) {
+        console.warn('CSRF cookie not found for', name, 'in', document.cookie);
+        return null;
     }
-    return cookieValue;
+    return decodeURIComponent(value.split('=')[1]);
 }
+
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
