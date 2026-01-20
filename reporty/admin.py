@@ -159,31 +159,40 @@ class ReportAdmin(admin.ModelAdmin):
             queryset = queryset.filter(user=form.cleaned_data['customer'])
 
         for order in queryset:
-            issued_items = order.items.filter(vydano=True)
-            if issued_items.exists():
-                unclaimed_total = sum(
-                    item.quantity * getattr(item.menu_item.jidlo, 'cena', 0) for item in issued_items
-                )
-                dotace = sum(
-                    (getattr(item.menu_item.jidlo, 'cena', 0) - item.cena) * item.quantity
-                    for item in issued_items
-                )
-                final_price = sum(item.quantity * item.cena for item in issued_items)
+            if order.status == 'vydano':
+                items = order.items.filter(vydano=True)
+            elif order.status == 'nevyzvednuto':
+                items = order.items.all()
+            else:
+                continue
 
-                row = {
-                    'user': order.user.get_full_name(),
-                    'osobni_cislo': order.user.osobni_cislo or '',
-                    'identifikacni_medium': order.user.identifikacni_medium or '',
-                    'date': order.datum_vydeje,
-                    'status': order.status,
-                    'unclaimed_total': round(unclaimed_total, 2),
-                    'dotace': round(dotace, 2),
-                    'final_price': round(final_price, 2),
-                }
-                report_data.append(row)
-                totals['unclaimed_total'] += unclaimed_total
-                totals['dotace'] += dotace
-                totals['final_price'] += final_price
+            if not items.exists():
+                continue
+
+            unclaimed_total = sum(
+                item.quantity * getattr(item.menu_item.jidlo, 'cena', 0) for item in items
+            )
+            dotace = sum(
+                (getattr(item.menu_item.jidlo, 'cena', 0) - item.cena) * item.quantity
+                for item in items
+            )
+            final_price = sum(item.quantity * item.cena for item in items)
+
+            row = {
+                'user': order.user.get_full_name(),
+                'osobni_cislo': order.user.osobni_cislo or '',
+                'identifikacni_medium': order.user.identifikacni_medium or '',
+                'date': order.datum_vydeje,
+                'status': order.status,
+                'unclaimed_total': round(unclaimed_total, 2),
+                'dotace': round(dotace, 2),
+                'final_price': round(final_price, 2),
+            }
+            report_data.append(row)
+            totals['unclaimed_total'] += unclaimed_total
+            totals['dotace'] += dotace
+            totals['final_price'] += final_price
+
 
         if grouping == 'total':
             grouped = defaultdict(
@@ -410,7 +419,7 @@ class ReportAdmin(admin.ModelAdmin):
         # Základní queryset - detailní položky
         queryset = OrderItem.objects.filter(
             order__status__in=['vydano', 'nevyzvednuto'],
-            vydano=True
+            
         ).select_related('order__user', 'menu_item__jidlo', 'menu_item__druh_jidla').order_by(
             'order__datum_vydeje', 'order__user__first_name', 'menu_item__druh_jidla__nazev'
         )

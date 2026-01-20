@@ -2,9 +2,10 @@
 
 {% block object-tools-items %}
     {{ block.super }}
+    
     <li>
-        <a href="{% url 'admin:objednavky_order_price_recalculation' %}" class="button">
-            🔄 Přepočet cen
+        <a href="{% url 'admin:bulk_create_orders' %}" class="addlink">
+            ➕ Hromadně založit objednávky
         </a>
     </li>
 {% endblock %}

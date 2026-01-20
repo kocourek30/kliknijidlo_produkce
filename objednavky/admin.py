@@ -113,6 +113,10 @@ class OrderAdmin(admin.ModelAdmin):
         'show_items',
     )
     list_display_links = None
+
+    def has_add_permission(self, request):
+        return False    
+
     list_filter = ('status', 'datum_vydeje', 'user', 'created_at')
     search_fields = [
         'user__username',
