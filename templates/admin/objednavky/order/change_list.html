@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    <ul class="object-tools">
+        <li>
+            <a href="{% url 'admin:objednavky_order_price_recalculation' %}" class="addlink">
+                🔄 Přepočet cen
+            </a>
+        </li>
+        {{ block.super }}
+    </ul>
+{% endblock %}

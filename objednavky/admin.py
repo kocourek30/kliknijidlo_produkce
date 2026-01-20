@@ -4,15 +4,21 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import transaction, models
-from django.db.models import Count, Max, Sum  # Min, Q teď nepotřebuješ, klidně je přidej
+from django.db.models import Count, Max, Sum
 from django.http import JsonResponse
 from decimal import Decimal
+from django.contrib import admin, messages
+from django.shortcuts import render, redirect
+from django.utils.html import format_html
+from datetime import date, timedelta
 
-
-from .models import Order, OrderItem
+from .models import (
+    Order, OrderItem, UserRFID, 
+    PriceRecalculationLog, PriceRecalculationDetail
+)
+from .services import recalculate_order_prices, get_recalculation_summary_by_user
 from jidelnicek.models import Jidelnicek, PolozkaJidelnicku
 from dotace.models import DotacniPolitika, DotaceProJidelniskouSkupinu
-
 
 User = get_user_model()
 
@@ -33,7 +39,7 @@ def get_cena_for_user_and_item(user, menu_item):
     base_price = menu_item.jidlo.cena
     snizena_cena = base_price
     if procento and procento != Decimal('0'):
-        snizena_cena = base_price * (Decimal('1') - Decimal(procento) / Decimal(100))
+        snizena_cena = base_price * (Decimal('1') - Decimal(procento) / Decimal('100'))
     if castka and castka != Decimal('0'):
         snizena_cena = max(Decimal('0'), snizena_cena - Decimal(castka))
     return snizena_cena.quantize(Decimal('0.01'))
@@ -94,7 +100,8 @@ class BulkOrderForm(forms.Form):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    change_list_template = "admin/orders_changelist.html"
+    change_list_template = 'admin/objednavky/order_change_list.html'
+    
     list_display = (
         'created_at_formatted',
         'osobni_cislo',
@@ -122,6 +129,11 @@ class OrderAdmin(admin.ModelAdmin):
             path('api/menu_items/', self.admin_site.admin_view(self.menu_items_api), name='menu_items_api'),
             path('api/jidelnicek_days/', self.admin_site.admin_view(self.jidelnicek_days_api), name='jidelnicek_days_api'),
             path('api/zákazníci/', self.admin_site.admin_view(self.users_api), name='users_api'),
+            path(
+                'price-recalculation/',
+                self.admin_site.admin_view(self.price_recalculation_view),
+                name='objednavky_order_price_recalculation',
+            ),
         ]
         return custom_urls + urls
 
@@ -150,7 +162,6 @@ class OrderAdmin(admin.ModelAdmin):
     @admin.display(description="Počet položek", ordering='items__quantity')
     def total_items(self, obj):
         return sum(item.quantity for item in obj.items.all())
-    total_items.short_description = "Počet"
 
     @admin.display(description="Položky objednávky a cena")
     def show_items(self, obj):
@@ -165,7 +176,6 @@ class OrderAdmin(admin.ModelAdmin):
         return f"{getattr(user, 'osobni_cislo', '') or ''} - {user.first_name} {user.last_name}"
 
     def bulk_create_view(self, request):
-        from django.shortcuts import render, redirect
         form = BulkOrderForm(request.POST or None)
         error_users = []
         if request.method == "POST" and form.is_valid():
@@ -294,16 +304,86 @@ class OrderAdmin(admin.ModelAdmin):
         days_list = sorted(days_set)
         return JsonResponse(days_list, safe=False)
 
+    def price_recalculation_view(self, request):
+        """View pro přepočet cen s náhledem a potvrzením"""
+        
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            
+            # Načti data z formuláře
+            date_from_str = request.POST.get('date_from')
+            date_to_str = request.POST.get('date_to')
+            
+            try:
+                date_from = date.fromisoformat(date_from_str)
+                date_to = date.fromisoformat(date_to_str)
+            except (ValueError, TypeError):
+                messages.error(request, '❌ Neplatné datum')
+                return redirect('admin:objednavky_order_changelist')
+            
+            # Validace období
+            if date_from > date_to:
+                messages.error(request, '❌ Datum OD musí být menší nebo rovno datu DO')
+                return redirect('admin:objednavky_order_price_recalculation')
+            
+            if action == 'preview':
+                # Dry run - pouze náhled změn
+                result = recalculate_order_prices(
+                    date_from, date_to, 
+                    request.user, 
+                    dry_run=True
+                )
+                
+                if not result['success']:
+                    messages.warning(request, result['message'])
+                    return redirect('admin:objednavky_order_price_recalculation')
+                
+                # Seskup změny podle uživatelů
+                by_user = get_recalculation_summary_by_user(result['changes'])
+                
+                context = {
+                    **self.admin_site.each_context(request),
+                    'title': 'Náhled přepočtu cen',
+                    'result': result,
+                    'by_user': by_user,
+                    'date_from': date_from,
+                    'date_to': date_to,
+                }
+                return render(request, 'admin/objednavky/price_recalculation_preview.html', context)
+            
+            elif action == 'confirm':
+                # Skutečný přepočet
+                result = recalculate_order_prices(
+                    date_from, date_to, 
+                    request.user, 
+                    dry_run=False
+                )
+                
+                if result['success']:
+                    messages.success(
+                        request, 
+                        f"✅ {result['message']} | "
+                        f"Cenový rozdíl: {result['total_price_diff']:+.2f} Kč"
+                    )
+                else:
+                    messages.error(request, f"❌ {result['message']}")
+                
+                return redirect('admin:objednavky_pricerecalculationlog_changelist')
+        
+        # GET request - zobraz formulář
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Přepočet cen objednávek',
+            'today': date.today(),
+            'week_later': date.today() + timedelta(days=7),
+        }
+        return render(request, 'admin/objednavky/price_recalculation_form.html', context)
+
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     """
-    Detailní list položek objednávek:
-    - osobní číslo, jméno, příjmení (přes order.user)
-    - datum výdeje
-    - druh jídla
-    - název jídla
-    - počet ks, cena, celkem
+    Detailní list položek objednávek
     """
     list_display = [
         'datum_vydeje',
@@ -353,16 +433,140 @@ class OrderItemAdmin(admin.ModelAdmin):
 
     def total_price(self, obj):
         return f"{obj.quantity * obj.cena} Kč"
-    total_price.short_description = "Celkem"
+
+
+@admin.register(PriceRecalculationLog)
+class PriceRecalculationLogAdmin(admin.ModelAdmin):
+    verbose_name = "Přepočet cen log"
+    verbose_name_plural = "Přepočty cen logy"
+
+    list_display = [
+        'created_at', 'created_by', 'date_range', 
+        'orders_affected', 'items_affected', 
+        'colored_price_diff'
+    ]
+    list_filter = ['created_at', 'created_by']
+    search_fields = ['created_by__username', 'note']
+    readonly_fields = [
+        'created_at', 'created_by', 'date_from', 'date_to',
+        'orders_affected', 'items_affected', 'total_price_diff', 'note'
+    ]
+    
+    def date_range(self, obj):
+        return f"{obj.date_from.strftime('%d.%m.%Y')} - {obj.date_to.strftime('%d.%m.%Y')}"
+    date_range.short_description = "Období"
+    
+    def colored_price_diff(self, obj):
+        diff = obj.total_price_diff
+        if diff > 0:
+            color = 'red'
+            symbol = '+'
+        elif diff < 0:
+            color = 'green'
+            symbol = ''
+        else:
+            color = 'gray'
+            symbol = ''
+
+        formatted_diff = f"{symbol}{diff:.2f} Kč"  # ✅ Naformátuj string PŘEDEM
+        return format_html(
+            '<span style="color: {};">{}</span>',  # ✅ Pak jen vložíš string
+            color, formatted_diff
+        )
+    
+    colored_price_diff.short_description = "Cenový rozdíl"
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(PriceRecalculationDetail)
+class PriceRecalculationDetailAdmin(admin.ModelAdmin):
+
+    verbose_name = "Přepočet cen detail"
+    verbose_name_plural = "Přepočty cen detaily"
+
+    list_display = [
+        'log', 
+        'datum_vydeje',      # ✅ NOVÉ
+        'osobni_cislo',      # ✅ NOVÉ
+        'jmeno_prijmeni',    # ✅ NOVÉ
+        'jidlo_nazev',       # ✅ NOVÉ
+        'old_price', 
+        'new_price', 
+        'colored_diff'
+    ]
+    list_filter = ['log__created_at', 'order_item__order__datum_vydeje']  # ✅ Přidán filtr
+    search_fields = [  # ✅ Přidáno vyhledávání
+        'order_item__order__user__first_name',
+        'order_item__order__user__last_name',
+        'order_item__order__user__osobni_cislo',
+        'order_item__menu_item__jidlo__nazev',
+    ]
+    readonly_fields = [
+        'log', 'order_item', 'old_price', 'new_price', 'price_diff'
+    ]
+    list_select_related = (  # ✅ Optimalizace dotazů
+        'order_item__order__user', 
+        'order_item__menu_item__jidlo',
+        'log'
+    )
+    
+    # ✅ NOVÉ METODY pro zobrazení
+    @admin.display(description="Datum výdeje", ordering='order_item__order__datum_vydeje')
+    def datum_vydeje(self, obj):
+        return obj.order_item.order.datum_vydeje.strftime('%d.%m.%Y')
+    
+    @admin.display(description="Osobní číslo", ordering='order_item__order__user__osobni_cislo')
+    def osobni_cislo(self, obj):
+        return getattr(obj.order_item.order.user, 'osobni_cislo', '') or '-'
+    
+    @admin.display(description="Zákazník", ordering='order_item__order__user__last_name')
+    def jmeno_prijmeni(self, obj):
+        user = obj.order_item.order.user
+        return f"{user.first_name} {user.last_name}"
+    
+    @admin.display(description="Jídlo", ordering='order_item__menu_item__jidlo__nazev')
+    def jidlo_nazev(self, obj):
+        return obj.order_item.menu_item.jidlo.nazev
+    
+    def colored_diff(self, obj):
+        diff = obj.price_diff
+        if diff > 0:
+            color = 'red'
+            symbol = '+'
+        elif diff < 0:
+            color = 'green'
+            symbol = ''
+        else:
+            color = 'gray'
+            symbol = ''
+        
+        formatted_diff = f"{symbol}{diff:.2f} Kč"
+        
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            color, formatted_diff
+        )
+    colored_diff.short_description = "Rozdíl"
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 
 class OrderSummaryAdmin(admin.ModelAdmin):
     """
     Souhrn: jídelníček vs. počet objednaných jídel
-    pro nejbližší den, na který jsou objednávky uzavřené.
     """
     change_list_template = "admin/order_summary_changelist.html"
-
+    
     CLOSED_STATUSES = ["uzavrena", "uzavrena-objednavani"]
 
     def has_add_permission(self, request):
@@ -378,8 +582,6 @@ class OrderSummaryAdmin(admin.ModelAdmin):
         return OrderItem.objects.none()
 
     def changelist_view(self, request, extra_context=None):
-        from django.shortcuts import render
-
         closed_orders = Order.objects.filter(status__in=self.CLOSED_STATUSES)
         nearest_date = closed_orders.aggregate(d=Max('datum_vydeje'))['d']
 
@@ -426,6 +628,3 @@ class OrderSummaryAdmin(admin.ModelAdmin):
             "title": "Souhrn objednávek vs. jídelníček",
         }
         return render(request, self.change_list_template, context)
-
-
-

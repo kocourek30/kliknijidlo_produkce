@@ -214,25 +214,43 @@ def dashboard(request):
     month_ctx = build_month_menu_context(request.user, month_first, last_day_month)
 
     # ✅ FIXED POŘADÍ JÍDEL: 1.Polévka 2.Hlavní 3.Dezert 4.Večeře
+# ✅ FIXED POŘADÍ JÍDEL: 1.Polévka 2.Hlavní 3.Dezert 4.Večeře
+# ✅ OPRAVENÉ POŘADÍ podle skutečných dat v DB
     DRUH_ORDER = {
-        'Polévka': 1,
-        'Hlavní jídlo': 2,
-        'Dezert': 3,
-        'Večeře': 4,
-        # fallback pro jiné druhy
-        'Salát': 5,
-        'Nápoj': 6
+        'Snídaně': 1,
+        'Přesnídávka': 2,
+        'Oběd': 3,
+        'Svačina': 4,
+        'Večeře': 5,
+        'Pozdní večeře': 6,
     }
 
+
     def sort_druhy_by_priority(items_by_druh):
-        """Seřadí druhy jídel podle pevné priority"""
         if not items_by_druh:
             return {}
-        sorted_druhy = sorted(
-            items_by_druh.keys(),
-            key=lambda d: DRUH_ORDER.get(d.nazev, 99)
-        )
-        return {druh: items_by_druh[druh] for druh in sorted_druhy}
+        
+        # Zkontroluj typ prvního klíče
+        first_key = next(iter(items_by_druh.keys()))
+        print(f"🔍 Typ klíče: {type(first_key)}, hodnota: {first_key}")
+        
+        # Pokud je klíč string
+        if isinstance(first_key, str):
+            sorted_keys = sorted(
+                items_by_druh.keys(),
+                key=lambda nazev: DRUH_ORDER.get(nazev, 99)
+            )
+        # Pokud je klíč objekt
+        else:
+            sorted_keys = sorted(
+                items_by_druh.keys(),
+                key=lambda druh_obj: DRUH_ORDER.get(druh_obj.nazev, 99)
+            )
+        
+        return {key: items_by_druh[key] for key in sorted_keys}
+
+
+
 
     # Seřaď TÝDEN
     if week_ctx.get('menu_items_by_day_grouped'):

@@ -76,6 +76,8 @@ INSTALLED_APPS = [
     'vydej',
     'vydej_frontend',
     'reporty',
+    'prepocty',
+    
 ]
 
 # --- MIDDLEWARE ---
@@ -332,6 +334,8 @@ JAZZMIN_SETTINGS = {
         "canteen_settings.GroupOrderLimit": "fas fa-user-friends",
         "canteen_settings.MealPickupTime": "fas fa-clock",
         "canteen_settings.OrderClosingTime": "fas fa-stopwatch",
+        "canteen_settings.OperatingExceptions": "fas fa-triangle-exclamation",
+        "canteen_settings.OperatingDays": "fas fa-circle-check",
         
         # Výdej jídel
         "vydej_jidel.VydajiciCas": "fas fa-clock-rotate-left",
@@ -346,6 +350,11 @@ JAZZMIN_SETTINGS = {
         "frontend.Setting": "fas fa-sliders",
         "reporty": "fas fa-chart-mixed",
         "auth": "fas fa-shield-alt",
+
+        "reporty.ReportDummy": "fas fa-chart-pie",
+        "objednavky.PriceRecalculationDetail": "fas fa-clipboard-check",
+        "objednavky.PriceRecalculationLog": "fas fa-clipboard-list",
+
     },
     
     "order_with_respect_to": [
@@ -358,6 +367,7 @@ JAZZMIN_SETTINGS = {
         "canteen_settings",
         "frontend",
         "reporty",
+        "prepocty",
         "auth",
     ],
     
@@ -367,6 +377,32 @@ JAZZMIN_SETTINGS = {
     ],
     
     "custom_css": "css/custom-admin.css",
+
+    'custom_links': {
+        'prepocty': [  # ✅ Custom odkazy pod novou sekcí
+            {
+                'name': 'Spustit přepočet cen',
+                'url': 'admin:objednavky_order_price_recalculation',
+                'icon': 'fas fa-play-circle',
+            },
+            {
+                'name': 'Historie přepočtů',
+                'url': 'admin:objednavky_pricerecalculationlog_changelist',
+                'icon': 'fas fa-history',
+            },
+            {
+                'name': 'Detaily přepočtů',
+                'url': 'admin:objednavky_pricerecalculationdetail_changelist',
+                'icon': 'fas fa-list',
+            },
+        ]
+    },
+    
+    'hide_models': [
+        'prepocty.PrepoctyDummy',
+        'objednavky.PriceRecalculationLog',
+        'objednavky.PriceRecalculationDetail',
+    ],
 }
 
 # UI customizace

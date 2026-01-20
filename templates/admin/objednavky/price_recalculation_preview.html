@@ -1,0 +1,123 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div style="max-width: 1200px;">
+    <h1>👁️ Náhled přepočtu cen</h1>
+    
+    <div class="module" style="margin: 20px 0; padding: 15px; background: #e8f4f8; border-left: 4px solid #3498db;">
+        <h3>📊 Souhrn</h3>
+        <table style="width: 100%;">
+            <tr>
+                <td><strong>Období:</strong></td>
+                <td>{{ date_from|date:'d.m.Y' }} - {{ date_to|date:'d.m.Y' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Celkem položek:</strong></td>
+                <td>{{ result.items_total }}</td>
+            </tr>
+            <tr>
+                <td><strong>Změněných položek:</strong></td>
+                <td style="color: #e67e22; font-weight: bold;">{{ result.items_changed }}</td>
+            </tr>
+            <tr>
+                <td><strong>Beze změny:</strong></td>
+                <td>{{ result.items_unchanged }}</td>
+            </tr>
+            <tr>
+                <td><strong>Ovlivněných objednávek:</strong></td>
+                <td>{{ result.orders_affected }}</td>
+            </tr>
+            <tr>
+                <td><strong>Celkový cenový rozdíl:</strong></td>
+                <td>
+                    <span style="font-size: 18px; font-weight: bold; color: {% if result.total_price_diff > 0 %}red{% elif result.total_price_diff < 0 %}green{% else %}gray{% endif %};">
+                        {% if result.total_price_diff > 0 %}+{% endif %}{{ result.total_price_diff|floatformat:2 }} Kč
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    {% if result.items_changed == 0 %}
+        <div class="module" style="padding: 15px; background: #d4edda; border-left: 4px solid #28a745;">
+            <p style="margin: 0;"><strong>✅ Žádné změny</strong> - všechny ceny odpovídají aktuálnímu nastavení.</p>
+        </div>
+        
+        <a href="{% url 'admin:objednavky_order_price_recalculation' %}" class="button">
+            ← Zpět
+        </a>
+    {% else %}
+        <h2>👥 Změny podle uživatelů</h2>
+        
+        {% for user, data in by_user.items %}
+        <div class="module" style="margin-bottom: 20px; border: 1px solid #ddd;">
+            <h3 style="background: #f5f5f5; padding: 10px; margin: 0;">
+                {{ user.get_full_name }} ({{ user.username }})
+                - {{ data.items_count }} položek
+                - Rozdíl: 
+                <span style="color: {% if data.total_diff > 0 %}red{% elif data.total_diff < 0 %}green{% else %}gray{% endif %};">
+                    {% if data.total_diff > 0 %}+{% endif %}{{ data.total_diff|floatformat:2 }} Kč
+                </span>
+            </h3>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f9f9f9;">
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Datum</th>
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Jídlo</th>
+                        <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Množství</th>
+                        <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Stará cena</th>
+                        <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Nová cena</th>
+                        <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Rozdíl/ks</th>
+                        <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Celkem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for change in data.items %}
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ change.date|date:'d.m.Y' }}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ change.menu_item_name }}</td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">{{ change.quantity }}×</td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">{{ change.old_price|floatformat:2 }} Kč</td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;">{{ change.new_price|floatformat:2 }} Kč</td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; color: {% if change.price_diff > 0 %}red{% elif change.price_diff < 0 %}green{% endif %};">
+                            {% if change.price_diff > 0 %}+{% endif %}{{ change.price_diff|floatformat:2 }} Kč
+                        </td>
+                        <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; color: {% if change.total_diff > 0 %}red{% elif change.total_diff < 0 %}green{% endif %};">
+                            {% if change.total_diff > 0 %}+{% endif %}{{ change.total_diff|floatformat:2 }} Kč
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border: 2px solid #ffc107;">
+            <h3 style="margin-top: 0;">⚠️ Potvrdit přepočet?</h3>
+            <p>Tímto provedete <strong>NEVRATNOU</strong> změnu cen a zůstatků uživatelů.</p>
+            
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="date_from" value="{{ date_from|date:'Y-m-d' }}">
+                <input type="hidden" name="date_to" value="{{ date_to|date:'Y-m-d' }}">
+                
+                <button 
+                    type="submit" 
+                    name="action" 
+                    value="confirm"
+                    class="button default"
+                    style="padding: 10px 20px; font-size: 16px; background: #28a745; color: white;"
+                    onclick="return confirm('Opravdu chcete provést přepočet cen?');"
+                >
+                    ✅ Potvrdit a provést přepočet
+                </button>
+            </form>
+            
+            <a href="{% url 'admin:objednavky_order_price_recalculation' %}" class="button" style="margin-left: 10px;">
+                ← Zpět na formulář
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

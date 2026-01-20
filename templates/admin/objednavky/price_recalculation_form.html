@@ -1,0 +1,67 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>🔄 Přepočet cen objednávek</h1>
+    
+    <div class="module" style="margin: 20px 0; padding: 15px; background: #fef8e7; border-left: 4px solid #f39c12;">
+        <p><strong>⚠️ Co tento nástroj dělá:</strong></p>
+        <ul>
+            <li>Přepočítá ceny všech položek objednávek podle <strong>aktuálních</strong> cen jídel a dotací</li>
+            <li>Upraví zůstatky uživatelů podle cenových rozdílů</li>
+            <li>Zaznamená všechny změny do audit logu</li>
+            <li>Týká se VŠECH stavů objednávek (včetně vydaných)</li>
+        </ul>
+    </div>
+    
+    <form method="post" style="background: white; padding: 20px; border: 1px solid #ddd;">
+        {% csrf_token %}
+        
+        <div class="form-row">
+            <div style="margin-bottom: 15px;">
+                <label for="date_from" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Datum OD:
+                </label>
+                <input 
+                    type="date" 
+                    id="date_from" 
+                    name="date_from" 
+                    value="{{ today|date:'Y-m-d' }}"
+                    required
+                    style="width: 100%; padding: 8px; font-size: 14px;"
+                >
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="date_to" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Datum DO:
+                </label>
+                <input 
+                    type="date" 
+                    id="date_to" 
+                    name="date_to" 
+                    value="{{ week_later|date:'Y-m-d' }}"
+                    required
+                    style="width: 100%; padding: 8px; font-size: 14px;"
+                >
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button 
+                type="submit" 
+                name="action" 
+                value="preview"
+                class="button default"
+                style="padding: 10px 20px; font-size: 14px;"
+            >
+                👁️ Náhled změn
+            </button>
+            
+            <a href="{% url 'admin:objednavky_order_changelist' %}" class="button" style="margin-left: 10px;">
+                Zrušit
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

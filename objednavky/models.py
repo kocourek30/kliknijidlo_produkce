@@ -10,6 +10,8 @@ from dotace.models import SkupinoveNastaveni, DotacniPolitika, DotaceProJidelnis
 from decimal import Decimal
 
 
+
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('zalozena-obsluhou', 'Založená obsluhou'),
@@ -180,3 +182,54 @@ class UserRFID(models.Model):
     
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.rfid_tag}"
+    
+class PriceRecalculationLog(models.Model):
+    """Audit log pro přepočty cen objednávek"""
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Provedeno")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True,
+        verbose_name="Provedl"
+    )
+    date_from = models.DateField(verbose_name="Datum od")
+    date_to = models.DateField(verbose_name="Datum do")
+    orders_affected = models.PositiveIntegerField(default=0, verbose_name="Ovlivněných objednávek")
+    items_affected = models.PositiveIntegerField(default=0, verbose_name="Ovlivněných položek")
+    total_price_diff = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0,
+        verbose_name="Celkový cenový rozdíl"
+    )
+    note = models.TextField(blank=True, verbose_name="Poznámka")
+    
+    class Meta:
+        verbose_name = "Přepočet cen log"
+        verbose_name_plural = "Přepočet cen log"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Přepočet {self.created_at.strftime('%d.%m.%Y %H:%M')} ({self.items_affected} položek)"
+
+
+class PriceRecalculationDetail(models.Model):
+    """Detail změny ceny jednotlivé objednávky"""
+    log = models.ForeignKey(
+        PriceRecalculationLog, 
+        on_delete=models.CASCADE, 
+        related_name='details'
+    )
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    old_price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Stará cena")
+    new_price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Nová cena")
+    price_diff = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Rozdíl")
+    
+    class Meta:
+        verbose_name = "Přepočet cen detail"
+        verbose_name_plural = "Přepočet cen detail"
+        
+        
+
+    def __str__(self):
+        return f"{self.order_item}: {self.old_price} → {self.new_price}"
